@@ -1,6 +1,6 @@
 """
-UpNote URL Scheme 클라이언트
-UpNote의 x-callback-url을 사용하여 노트를 작성하고 관리할 수 있는 Python 클래스
+UpNote URL Scheme Client
+Python class for creating and managing notes using UpNote's x-callback-url
 """
 
 import subprocess
@@ -11,24 +11,24 @@ import platform
 
 
 class UpNoteClient:
-    """UpNote URL scheme을 사용하여 노트를 작성하고 관리하는 클래스"""
+    """Class for creating and managing notes using UpNote URL scheme"""
     
     def __init__(self):
         """
-        UpNote 클라이언트 초기화
+        Initialize UpNote client
         """
         self.base_scheme = "upnote://x-callback-url"
         self.system = platform.system()
     
     def _open_url(self, url: str) -> bool:
         """
-        시스템에 맞는 방법으로 URL 열기
+        Open URL using system-specific method
         
         Args:
-            url (str): 열 URL
+            url (str): URL to open
             
         Returns:
-            bool: 성공 여부
+            bool: Success status
         """
         try:
             if self.system == "Darwin":  # macOS
@@ -38,23 +38,23 @@ class UpNoteClient:
             elif self.system == "Linux":
                 subprocess.run(["xdg-open", url], check=True)
             else:
-                raise Exception(f"지원하지 않는 운영체제: {self.system}")
+                raise Exception(f"Unsupported operating system: {self.system}")
             return True
         except subprocess.CalledProcessError as e:
-            raise Exception(f"URL 열기 실패: {str(e)}")
+            raise Exception(f"Failed to open URL: {str(e)}")
     
     def _build_url(self, action: str, params: Dict[str, Any]) -> str:
         """
-        UpNote URL scheme URL 생성
+        Generate UpNote URL scheme URL
         
         Args:
-            action (str): 액션 (예: note/new, note/open)
-            params (Dict[str, Any]): URL 파라미터
+            action (str): Action (e.g., note/new, note/open)
+            params (Dict[str, Any]): URL parameters
             
         Returns:
-            str: 완성된 URL
+            str: Complete URL
         """
-        # None 값 제거 및 문자열 변환
+        # Remove None values and convert to strings
         clean_params = {}
         for key, value in params.items():
             if value is not None:
@@ -65,7 +65,7 @@ class UpNoteClient:
                 else:
                     clean_params[key] = str(value)
         
-        # URL 인코딩 (마크다운 문자들을 안전하게 처리)
+        # URL encoding (safely handle markdown characters)
         query_string = urllib.parse.urlencode(clean_params, safe='', quote_via=urllib.parse.quote)
         url = f"{self.base_scheme}/{action}"
         if query_string:
@@ -75,14 +75,14 @@ class UpNoteClient:
     
     def debug_url(self, action: str, params: Dict[str, Any]) -> str:
         """
-        디버깅용: 생성될 URL을 반환 (실제로 열지 않음)
+        Debugging: Return the URL that would be generated (without actually opening)
         
         Args:
-            action (str): 액션
-            params (Dict[str, Any]): 파라미터
+            action (str): Action
+            params (Dict[str, Any]): Parameters
             
         Returns:
-            str: 생성된 URL
+            str: Generated URL
         """
         return self._build_url(action, params)
     
@@ -123,11 +123,11 @@ class UpNoteClient:
         x_cancel: Optional[str] = None
     ) -> bool:
         """
-        새로운 노트 생성 (확장된 UpNote URL scheme 파라미터 지원)
+        Create a new note (supports extended UpNote URL scheme parameters)
         """
         params = {}
         
-        # 기본 노트 정보
+        # Basic note information
         if text:
             params["text"] = text
         if title:
@@ -141,7 +141,7 @@ class UpNoteClient:
         if category:
             params["category"] = category
             
-        # 노트 속성
+        # Note properties
         if markdown is not None:
             params["markdown"] = markdown
         if pinned is not None:
@@ -155,7 +155,7 @@ class UpNoteClient:
         if priority:
             params["priority"] = priority
             
-        # 시간 관련
+        # Time-related
         if reminder:
             params["reminder"] = reminder
         if due_date:
@@ -165,7 +165,7 @@ class UpNoteClient:
         if modified_date:
             params["modified_date"] = modified_date
             
-        # 위치 및 첨부파일
+        # Location and attachments
         if location:
             params["location"] = location
         if attachment:
@@ -173,7 +173,7 @@ class UpNoteClient:
         if attachments:
             params["attachments"] = attachments
             
-        # 메타데이터
+        # Metadata
         if template:
             params["template"] = template
         if author:
@@ -183,7 +183,7 @@ class UpNoteClient:
         if url:
             params["url"] = url
             
-        # 보안 및 접근 제어
+        # Security and access control
         if encrypted is not None:
             params["encrypted"] = encrypted
         if password:
@@ -195,13 +195,13 @@ class UpNoteClient:
         if public is not None:
             params["public"] = public
             
-        # 형식 및 인코딩
+        # Format and encoding
         if format:
             params["format"] = format
         if encoding:
             params["encoding"] = encoding
             
-        # 콜백 URL
+        # Callback URLs
         if x_success:
             params["x-success"] = x_success
         if x_error:
@@ -225,9 +225,9 @@ class UpNoteClient:
         reminder: Optional[str] = None
     ) -> bool:
         """
-        마크다운 형식의 노트 생성 (특별히 마크다운 처리에 최적화)
+        Create a markdown-formatted note (optimized for markdown processing)
         """
-        # 마크다운 콘텐츠 포맷팅
+        # Format markdown content
         formatted_content = content
         
         if add_timestamp:
@@ -259,19 +259,19 @@ class UpNoteClient:
         reminder: Optional[str] = None
     ) -> bool:
         """
-        할 일 목록이 있는 노트 생성
+        Create a note with a task list
         """
         task_content = "# " + title + "\n\n"
         task_content += UpNoteHelper.create_checklist(tasks)
         
         if due_date:
-            task_content += f"\n\n**마감일**: {due_date}"
+            task_content += f"\n\n**Due Date**: {due_date}"
         
         return self.create_note(
             text=task_content,
             title=title,
             notebook=notebook,
-            tags=tags or ["할일", "작업"],
+            tags=tags or ["todo", "tasks"],
             priority=priority,
             due_date=due_date,
             reminder=reminder,
@@ -289,39 +289,39 @@ class UpNoteClient:
         tags: Optional[List[str]] = None
     ) -> bool:
         """
-        회의록 노트 생성
+        Create a meeting note
         """
         meeting_content = f"""# {title}
 
-**일시**: {date}
-**참석자**: {', '.join(attendees)}
-{f"**장소**: {location}" if location else ""}
+**Time**: {date}
+**Attendees**: {', '.join(attendees)}
+{f"**Location**: {location}" if location else ""}
 
-## 안건
+## Agenda
 {chr(10).join([f"{i+1}. {item}" for i, item in enumerate(agenda)])}
 
-## 논의 내용
-[논의 내용을 여기에 작성하세요]
+## Discussion Points
+[Write discussion points here]
 
-## 결정 사항
-- [결정 사항 1]
-- [결정 사항 2]
+## Decisions Made
+- [Decision 1]
+- [Decision 2]
 
-## 액션 아이템
+## Action Items
 {UpNoteHelper.create_checklist([
-    "[작업 내용] (담당자, 마감일)",
-    "[작업 내용] (담당자, 마감일)"
+    "[Task Description] (Person, Due Date)",
+    "[Task Description] (Person, Due Date)"
 ])}
 
-## 다음 회의
-**일정**: [다음 회의 일정]
+## Next Meeting
+**Schedule**: [Next meeting schedule]
 """
         
         return self.create_note(
             text=meeting_content,
             title=title,
-            notebook=notebook or "회의록",
-            tags=tags or ["회의", "미팅"],
+            notebook=notebook or "Meeting Notes",
+            tags=tags or ["meeting", "meeting-notes"],
             location=location,
             markdown=True,
             template="meeting"
@@ -338,46 +338,46 @@ class UpNoteClient:
         priority: str = "medium"
     ) -> bool:
         """
-        프로젝트 계획 노트 생성
+        Create a project plan note
         """
         project_content = f"""# 📋 {project_name}
 
-## 프로젝트 개요
+## Project Overview
 {description}
 
-## 팀 구성
+## Team Composition
 {chr(10).join([f"- {member}" for member in team_members])}
 
-## 주요 마일스톤
+## Key Milestones
 {UpNoteHelper.create_checklist(milestones)}
 
-## 진행 상황
-- **시작일**: {datetime.now().strftime('%Y-%m-%d')}
-{f"- **마감일**: {due_date}" if due_date else ""}
-- **현재 상태**: 계획 단계
+## Progress
+- **Start Date**: {datetime.now().strftime('%Y-%m-%d')}
+{f"- **Due Date**: {due_date}" if due_date else ""}
+- **Current Status**: Planning Phase
 
-## 리소스
-- 예산: [예산 정보]
-- 도구: [사용할 도구들]
-- 참고 자료: [관련 문서 링크]
+## Resources
+- Budget: [Budget information]
+- Tools: [Tools to be used]
+- Reference Materials: [Related document links]
 
-## 위험 요소
-- [위험 요소 1]
-- [위험 요소 2]
+## Risk Factors
+- [Risk Factor 1]
+- [Risk Factor 2]
 
-## 다음 단계
+## Next Steps
 {UpNoteHelper.create_checklist([
-    "요구사항 분석",
-    "기술 스택 결정",
-    "개발 일정 수립"
+    "Requirements analysis",
+    "Technology stack decision",
+    "Development schedule establishment"
 ])}
 """
         
         return self.create_note(
             text=project_content,
             title=f"📋 {project_name}",
-            notebook=notebook or "프로젝트",
-            tags=["프로젝트", "계획", priority],
+            notebook=notebook or "Projects",
+            tags=["project", "plan", priority],
             due_date=due_date,
             priority=priority,
             markdown=True,
@@ -394,52 +394,52 @@ class UpNoteClient:
         notebook: Optional[str] = None
     ) -> bool:
         """
-        일일 노트 생성
+        Create a daily note
         """
         if not date:
             date = datetime.now().strftime('%Y-%m-%d')
         
         daily_content = f"""# 📅 {date}
 
-## 오늘의 상태
-{f"**기분**: {mood}" if mood else "**기분**: "}
-{f"**날씨**: {weather}" if weather else "**날씨**: "}
+## Today's Status
+{f"**Mood**: {mood}" if mood else "**Mood**: "}
+{f"**Weather**: {weather}" if weather else "**Weather**: "}
 
-## 오늘의 목표
+## Today's Goals
 {UpNoteHelper.create_checklist(goals) if goals else UpNoteHelper.create_checklist([
-    "목표 1",
-    "목표 2",
-    "목표 3"
+    "Goal 1",
+    "Goal 2",
+    "Goal 3"
 ])}
 
-## 중요한 일들
-- [중요한 일 1]
-- [중요한 일 2]
+## Important Things
+- [Important Thing 1]
+- [Important Thing 2]
 
-## 배운 것들
-- [새로 배운 것 1]
-- [새로 배운 것 2]
+## Things Learned
+- [Thing Learned 1]
+- [Thing Learned 2]
 
-## 감사한 일들
-- [감사한 일 1]
-- [감사한 일 2]
-- [감사한 일 3]
+## Things I'm Grateful For
+- [Thing I'm Grateful For 1]
+- [Thing I'm Grateful For 2]
+- [Thing I'm Grateful For 3]
 
-## 하루 돌아보기
-{reflections if reflections else "[오늘 하루를 돌아보며 느낀 점을 적어보세요]"}
+## Daily Reflection
+{reflections if reflections else "[Write about your thoughts on today's day]"}
 
-## 내일 계획
+## Tomorrow's Plan
 {UpNoteHelper.create_checklist([
-    "내일 할 일 1",
-    "내일 할 일 2"
+    "Tomorrow's Task 1",
+    "Tomorrow's Task 2"
 ])}
 """
         
         return self.create_note(
             text=daily_content,
             title=f"📅 {date}",
-            notebook=notebook or "일기",
-            tags=["일기", "데일리", date.replace('-', '')],
+            notebook=notebook or "Diary",
+            tags=["diary", "daily", date.replace('-', '')],
             created_date=date,
             markdown=True,
             template="daily"
@@ -455,7 +455,7 @@ class UpNoteClient:
         x_cancel: Optional[str] = None
     ) -> bool:
         """
-        기존 노트 열기
+        Open an existing note
         """
         params = {}
         
@@ -486,7 +486,7 @@ class UpNoteClient:
         x_cancel: Optional[str] = None
     ) -> bool:
         """
-        노트 검색
+        Search for notes
         """
         params = {"query": query}
         
@@ -516,7 +516,7 @@ class UpNoteClient:
         x_cancel: Optional[str] = None
     ) -> bool:
         """
-        새로운 노트북 생성
+        Create a new notebook
         """
         params = {"name": name}
         
@@ -543,7 +543,7 @@ class UpNoteClient:
         x_cancel: Optional[str] = None
     ) -> bool:
         """
-        노트북 열기
+        Open a notebook
         """
         params = {}
         
@@ -567,7 +567,7 @@ class UpNoteClient:
         x_error: Optional[str] = None
     ) -> bool:
         """
-        UpNote 앱 열기
+        Open UpNote app
         """
         params = {}
         
@@ -588,7 +588,7 @@ class UpNoteClient:
         x_error: Optional[str] = None
     ) -> bool:
         """
-        빠른 노트 추가 (기존 노트에 추가하거나 새 노트 생성)
+        Add a quick note (add to existing note or create new note)
         """
         params = {"text": text}
         
@@ -614,7 +614,7 @@ class UpNoteClient:
         x_cancel: Optional[str] = None
     ) -> bool:
         """
-        파일에서 노트 가져오기
+        Import note from file
         """
         params = {"file": file_path}
         
@@ -643,7 +643,7 @@ class UpNoteClient:
         x_cancel: Optional[str] = None
     ) -> bool:
         """
-        노트 내보내기
+        Export note
         """
         params = {"format": format_type}
         
@@ -665,7 +665,7 @@ class UpNoteClient:
 
 
 class UpNoteHelper:
-    """UpNote 작업을 위한 헬퍼 클래스"""
+    """Helper class for UpNote operations"""
     
     @staticmethod
     def format_markdown_content(
@@ -674,13 +674,13 @@ class UpNoteHelper:
         add_separator: bool = False
     ) -> str:
         """
-        마크다운 콘텐츠 포맷팅
+        Format markdown content
         """
         formatted_content = content
         
         if add_timestamp:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            formatted_content = f"*작성일: {timestamp}*\n\n{formatted_content}"
+            formatted_content = f"*Created: {timestamp}*\n\n{formatted_content}"
         
         if add_separator:
             formatted_content = f"{formatted_content}\n\n---\n"
@@ -690,7 +690,7 @@ class UpNoteHelper:
     @staticmethod
     def create_checklist(items: List[str]) -> str:
         """
-        체크리스트 생성
+        Create checklist
         """
         checklist = "\n".join([f"- [ ] {item}" for item in items])
         return checklist
@@ -698,19 +698,29 @@ class UpNoteHelper:
     @staticmethod
     def create_table(headers: List[str], rows: List[List[str]]) -> str:
         """
-        마크다운 테이블 생성
+        Create markdown table
         """
         if not headers or not rows:
             return ""
         
-        # 헤더 생성
+        # Create header
         header_row = "| " + " | ".join(headers) + " |"
         separator_row = "| " + " | ".join(["---"] * len(headers)) + " |"
         
-        # 데이터 행 생성
+        # Create data rows
         data_rows = []
         for row in rows:
             if len(row) == len(headers):
                 data_rows.append("| " + " | ".join(row) + " |")
         
         return "\n".join([header_row, separator_row] + data_rows)
+
+
+# Package information
+__version__ = "1.0.0"
+__author__ = "UpNote Python Client Team"
+__email__ = "upnote.python.client@gmail.com"
+__description__ = "A Python client for UpNote using URL schemes"
+
+# Make main classes importable at package level
+__all__ = ["UpNoteClient", "UpNoteHelper"]

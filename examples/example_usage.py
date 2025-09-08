@@ -1,164 +1,184 @@
 #!/usr/bin/env python3
 """
-UpNote URL Scheme 클라이언트 사용 예제
+UpNote URL Scheme Client Usage Example
 """
 
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from upnote_client import UpNoteClient, UpNoteHelper
+# Try importing package
+try:
+    from upnote_python_client import UpNoteClient, UpNoteHelper
+except ImportError:
+    # For development environment - load module directly
+    import importlib.util
+    import os
+    
+    # Path to upnote_python_client/__init__.py file
+    module_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
+                              'upnote_python_client', '__init__.py')
+    
+    if os.path.exists(module_path):
+        spec = importlib.util.spec_from_file_location("upnote_python_client", module_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        UpNoteClient = module.UpNoteClient
+        UpNoteHelper = module.UpNoteHelper
+    else:
+        raise ImportError("Could not find upnote_python_client module. Please run 'pip install -e .'")
+
 from datetime import datetime
 
 
 def main():
-    # UpNote 클라이언트 초기화 (API 키 불필요)
+    # Initialize UpNote client (no API key required)
     client = UpNoteClient()
     
     try:
-        # 1. 기본 노트 생성
-        print("1. 기본 노트 생성...")
+        # 1. Create basic note
+        print("1. Creating basic note...")
         success = client.create_note(
-            text="- 프로젝트 계획서 작성\n- 회의 참석\n- 코드 리뷰",
-            title="오늘의 할 일"
+            text="- Write project plan\n- Attend meeting\n- Code review",
+            title="Today's Tasks"
         )
-        print(f"노트 생성 {'성공' if success else '실패'}")
+        print(f"Note creation {'successful' if success else 'failed'}")
         
-        # 2. 상세 설정이 포함된 노트 생성
-        print("\n2. 상세 설정 노트 생성...")
+        # 2. Create note with detailed settings
+        print("\n2. Creating note with detailed settings...")
         
-        # 체크리스트 생성
-        checklist_items = ["Python 스크립트 작성", "테스트 코드 작성", "문서화"]
+        # Create checklist
+        checklist_items = ["Write Python script", "Write test code", "Document"]
         checklist_content = UpNoteHelper.create_checklist(checklist_items)
         
-        # 타임스탬프가 포함된 콘텐츠
+        # Content with timestamp
         formatted_content = UpNoteHelper.format_markdown_content(
-            f"# 개발 작업 목록\n\n{checklist_content}",
+            f"# Development Tasks\n\n{checklist_content}",
             add_timestamp=True,
             add_separator=True
         )
         
         success = client.create_note(
             text=formatted_content,
-            title="개발 프로젝트 - UpNote URL Scheme",
-            notebook="개발 프로젝트",
-            tags=["개발", "Python", "URL-Scheme", "프로젝트"]
+            title="Development Project - UpNote URL Scheme",
+            notebook="Development Projects",
+            tags=["development", "Python", "URL-Scheme", "project"]
         )
-        print(f"상세 노트 생성 {'성공' if success else '실패'}")
+        print(f"Detailed note creation {'successful' if success else 'failed'}")
         
-        # 3. 테이블이 포함된 노트 생성
-        print("\n3. 테이블 포함 노트 생성...")
+        # 3. Create note with table
+        print("\n3. Creating note with table...")
         
-        # 테이블 데이터
-        headers = ["작업", "담당자", "마감일", "상태"]
+        # Table data
+        headers = ["Task", "Assignee", "Due Date", "Status"]
         rows = [
-            ["API 설계", "김개발", "2024-01-15", "진행중"],
-            ["UI 구현", "박디자인", "2024-01-20", "대기"],
-            ["테스트", "이테스터", "2024-01-25", "대기"]
+            ["API Design", "Kim Developer", "2024-01-15", "In Progress"],
+            ["UI Implementation", "Park Designer", "2024-01-20", "Pending"],
+            ["Testing", "Lee Tester", "2024-01-25", "Pending"]
         ]
         
         table_content = UpNoteHelper.create_table(headers, rows)
-        table_note_content = f"# 프로젝트 진행 현황\n\n{table_content}"
+        table_note_content = f"# Project Progress Status\n\n{table_content}"
         
         success = client.create_note(
             text=table_note_content,
-            title="프로젝트 진행 현황",
-            tags=["프로젝트", "현황", "테이블"]
+            title="Project Progress Status",
+            tags=["project", "status", "table"]
         )
-        print(f"테이블 노트 생성 {'성공' if success else '실패'}")
+        print(f"Table note creation {'successful' if success else 'failed'}")
         
-        # 4. 노트북 생성
-        print("\n4. 노트북 생성...")
-        success = client.create_notebook("새 프로젝트")
-        print(f"노트북 생성 {'성공' if success else '실패'}")
+        # 4. Create notebook
+        print("\n4. Creating notebook...")
+        success = client.create_notebook("New Project")
+        print(f"Notebook creation {'successful' if success else 'failed'}")
         
-        # 5. 노트 검색
-        print("\n5. 노트 검색...")
-        success = client.search_notes("개발")
-        print(f"검색 실행 {'성공' if success else '실패'}")
+        # 5. Search notes
+        print("\n5. Searching notes...")
+        success = client.search_notes("development")
+        print(f"Search execution {'successful' if success else 'failed'}")
         
-        # 6. UpNote 앱 열기
-        print("\n6. UpNote 앱 열기...")
+        # 6. Open UpNote app
+        print("\n6. Opening UpNote app...")
         success = client.open_upnote()
-        print(f"앱 열기 {'성공' if success else '실패'}")
+        print(f"App opening {'successful' if success else 'failed'}")
         
-        # 7. 복잡한 노트 생성 예제
-        print("\n7. 복잡한 노트 생성...")
+        # 7. Create complex note example
+        print("\n7. Creating complex note...")
         
-        # 회의록 템플릿
-        meeting_content = """# 팀 회의록
+        # Meeting note template
+        meeting_content = """# Team Meeting Notes
         
-**일시:** {date}
-**참석자:** 김개발, 박디자인, 이기획
+**Date:** {date}
+**Attendees:** Kim Developer, Park Designer, Lee Planner
 
-## 안건
-1. 프로젝트 진행 상황 점검
-2. 다음 스프린트 계획
-3. 기술적 이슈 논의
+## Agenda
+1. Check project progress
+2. Next sprint planning
+3. Technical issue discussion
 
-## 논의 내용
-- 현재 진행률: 60%
-- 주요 완료 작업:
-  - 사용자 인증 시스템
-  - 기본 UI 컴포넌트
-  - 데이터베이스 스키마
+## Discussion Points
+- Current progress: 60%
+- Major completed tasks:
+  - User authentication system
+  - Basic UI components
+  - Database schema
 
-## 액션 아이템
+## Action Items
 {checklist}
 
-## 다음 회의
-**일정:** 다음 주 금요일 오후 2시
+## Next Meeting
+**Schedule:** Next Friday at 2 PM
         """.format(
-            date=datetime.now().strftime("%Y년 %m월 %d일"),
+            date=datetime.now().strftime("%Y-%m-%d"),
             checklist=UpNoteHelper.create_checklist([
-                "API 문서 업데이트 (김개발)",
-                "UI 목업 완성 (박디자인)", 
-                "테스트 시나리오 작성 (이기획)"
+                "Update API documentation (Kim Developer)",
+                "Complete UI mockup (Park Designer)", 
+                "Write test scenarios (Lee Planner)"
             ])
         )
         
         success = client.create_note(
             text=meeting_content,
-            title=f"팀 회의록 - {datetime.now().strftime('%Y.%m.%d')}",
-            notebook="회의록",
-            tags=["회의", "팀", "프로젝트"]
+            title=f"Team Meeting Notes - {datetime.now().strftime('%Y.%m.%d')}",
+            notebook="Meeting Notes",
+            tags=["meeting", "team", "project"]
         )
-        print(f"회의록 생성 {'성공' if success else '실패'}")
+        print(f"Meeting notes creation {'successful' if success else 'failed'}")
         
     except Exception as e:
-        print(f"오류 발생: {str(e)}")
+        print(f"Error occurred: {str(e)}")
 
 
 def demo_url_generation():
-    """URL 생성 데모"""
-    print("\n=== URL 생성 데모 ===")
+    """URL Generation Demo"""
+    print("\n=== URL Generation Demo ===")
     client = UpNoteClient()
     
-    # 다양한 URL 생성 예제
+    # Various URL generation examples
     examples = [
         {
-            "name": "간단한 노트",
+            "name": "Simple note",
             "params": {"text": "Hello UpNote!"}
         },
         {
-            "name": "제목과 내용이 있는 노트",
-            "params": {"title": "테스트 노트", "text": "이것은 테스트입니다."}
+            "name": "Note with title and content",
+            "params": {"title": "Test Note", "text": "This is a test."}
         },
         {
-            "name": "태그가 있는 노트",
+            "name": "Note with tags",
             "params": {
-                "title": "태그 테스트",
-                "text": "태그 기능을 테스트합니다.",
-                "tags": ["테스트", "개발"]
+                "title": "Tag Test",
+                "text": "Testing tag functionality.",
+                "tags": ["test", "development"]
             }
         },
         {
-            "name": "노트북 지정 노트",
+            "name": "Note with specified notebook",
             "params": {
-                "title": "프로젝트 노트",
-                "text": "프로젝트 관련 내용",
-                "notebook": "개발 프로젝트",
-                "tags": ["프로젝트"]
+                "title": "Project Note",
+                "text": "Project related content",
+                "notebook": "Development Projects",
+                "tags": ["project"]
             }
         }
     ]

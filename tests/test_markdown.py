@@ -1,153 +1,174 @@
 """
-마크다운 테스트 스크립트
-UpNote에서 마크다운이 제대로 렌더링되는지 테스트
+Markdown Test Script
+Test if markdown renders properly in UpNote
 """
 
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from upnote_client import UpNoteClient, UpNoteHelper
+# Try importing package
+try:
+    from upnote_python_client import UpNoteClient, UpNoteHelper
+except ImportError:
+    # For development environment - load module directly
+    import importlib.util
+    import os
+    
+    # Path to upnote_python_client/__init__.py file
+    module_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
+                              'upnote_python_client', '__init__.py')
+    
+    if os.path.exists(module_path):
+        spec = importlib.util.spec_from_file_location("upnote_python_client", module_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        UpNoteClient = module.UpNoteClient
+        UpNoteHelper = module.UpNoteHelper
+    else:
+        raise ImportError("Could not find upnote_python_client module. Please run 'pip install -e .'")
+
+from datetime import datetime
 
 
 def test_markdown_features():
-    """다양한 마크다운 기능 테스트"""
+    """Test various markdown features"""
     client = UpNoteClient()
     
-    # 1. 기본 마크다운 테스트
-    print("1. 기본 마크다운 테스트...")
-    basic_markdown = """# 제목 1
-## 제목 2
-### 제목 3
+    # 1. Basic markdown test
+    print("1. Basic markdown test...")
+    basic_markdown = """# Heading 1
+## Heading 2
+### Heading 3
 
-**굵은 글씨**와 *기울임 글씨*
+**Bold text** and *italic text*
 
-`인라인 코드`
+`Inline code`
 
 ```python
-# 코드 블록
+# Code block
 def hello():
     print("Hello UpNote!")
 ```
 
-> 인용문입니다.
+> Quote
 
-- 목록 항목 1
-- 목록 항목 2
-  - 하위 항목 1
-  - 하위 항목 2
+- List item 1
+- List item 2
+  - Sub-item 1
+  - Sub-item 2
 
-1. 번호 목록 1
-2. 번호 목록 2
+1. Numbered list 1
+2. Numbered list 2
 
-[링크](https://example.com)
+[Link](https://example.com)
 
 ---
 
-구분선 위아래
+Content above and below separator
 """
     
     success = client.create_markdown_note(
-        title="마크다운 기본 기능 테스트",
+        title="Markdown Basic Features Test",
         content=basic_markdown,
-        tags=["테스트", "마크다운"],
+        tags=["test", "markdown"],
         add_timestamp=True
     )
-    print(f"기본 마크다운 노트 생성: {'성공' if success else '실패'}")
+    print(f"Basic markdown note creation: {'successful' if success else 'failed'}")
     
-    # 2. 체크리스트 테스트
-    print("\n2. 체크리스트 테스트...")
-    checklist_content = """# 프로젝트 할 일 목록
+    # 2. Checklist test
+    print("\n2. Checklist test...")
+    checklist_content = """# Project Task List
 
-## 개발 작업
+## Development Tasks
 {checklist}
 
-## 완료된 작업
-- [x] 프로젝트 초기 설정
-- [x] 기본 구조 설계
-- [x] 개발 환경 구축
+## Completed Tasks
+- [x] Project initial setup
+- [x] Basic structure design
+- [x] Development environment setup
 """.format(
         checklist=UpNoteHelper.create_checklist([
-            "API 설계 및 구현",
-            "프론트엔드 UI 개발",
-            "데이터베이스 스키마 설계",
-            "테스트 코드 작성",
-            "문서화 작업"
+            "API design and implementation",
+            "Frontend UI development",
+            "Database schema design",
+            "Test code writing",
+            "Documentation"
         ])
     )
     
     success = client.create_markdown_note(
-        title="프로젝트 체크리스트",
+        title="Project Checklist",
         content=checklist_content,
-        notebook="프로젝트 관리",
-        tags=["할일", "체크리스트", "프로젝트"]
+        notebook="Project Management",
+        tags=["todo", "checklist", "project"]
     )
-    print(f"체크리스트 노트 생성: {'성공' if success else '실패'}")
+    print(f"Checklist note creation: {'successful' if success else 'failed'}")
     
-    # 3. 테이블 테스트
-    print("\n3. 테이블 테스트...")
+    # 3. Table test
+    print("\n3. Table test...")
     
-    # 프로젝트 현황 테이블
+    # Project status table
     project_table = UpNoteHelper.create_table(
-        headers=["기능", "담당자", "진행률", "마감일", "상태"],
+        headers=["Feature", "Assignee", "Progress", "Due Date", "Status"],
         rows=[
-            ["사용자 인증", "김개발", "90%", "2024-01-15", "🟡 진행중"],
-            ["상품 관리", "박코더", "60%", "2024-01-20", "🟡 진행중"],
-            ["주문 시스템", "이프로", "30%", "2024-01-25", "🔴 지연"],
-            ["결제 연동", "최개발", "0%", "2024-01-30", "⚪ 대기"]
+            ["User Authentication", "Kim Dev", "90%", "2024-01-15", "🟡 In Progress"],
+            ["Product Management", "Park Coder", "60%", "2024-01-20", "🟡 In Progress"],
+            ["Order System", "Lee Pro", "30%", "2024-01-25", "🔴 Delayed"],
+            ["Payment Integration", "Choi Dev", "0%", "2024-01-30", "⚪ Pending"]
         ]
     )
     
-    # 기술 스택 테이블
+    # Tech stack table
     tech_table = UpNoteHelper.create_table(
-        headers=["분야", "기술", "버전", "용도"],
+        headers=["Area", "Technology", "Version", "Purpose"],
         rows=[
-            ["Frontend", "React", "18.2.0", "UI 프레임워크"],
-            ["Backend", "Node.js", "18.17.0", "서버 런타임"],
-            ["Database", "PostgreSQL", "15.3", "메인 데이터베이스"],
-            ["Cache", "Redis", "7.0", "세션 및 캐시"],
-            ["Deploy", "Docker", "24.0", "컨테이너화"]
+            ["Frontend", "React", "18.2.0", "UI Framework"],
+            ["Backend", "Node.js", "18.17.0", "Server Runtime"],
+            ["Database", "PostgreSQL", "15.3", "Main Database"],
+            ["Cache", "Redis", "7.0", "Session and Cache"],
+            ["Deploy", "Docker", "24.0", "Containerization"]
         ]
     )
     
-    table_content = f"""# 프로젝트 현황 대시보드
+    table_content = f"""# Project Status Dashboard
 
-## 📊 개발 진행 현황
+## 📊 Development Progress
 {project_table}
 
-## 🛠 기술 스택
+## 🛠 Tech Stack
 {tech_table}
 
-## 📈 주요 지표
-- **전체 진행률**: 45%
-- **완료된 기능**: 0개
-- **진행중인 기능**: 2개
-- **지연된 기능**: 1개
+## 📈 Key Metrics
+- **Overall Progress**: 45%
+- **Completed Features**: 0
+- **In Progress Features**: 2
+- **Delayed Features**: 1
 
-## 🚨 주의사항
-> **주문 시스템**이 지연되고 있습니다. 리소스 재배치가 필요할 수 있습니다.
+## 🚨 Notices
+> **Order System** is delayed. Resource reallocation may be needed.
 
-## 📅 다음 마일스톤
-- [ ] 사용자 인증 완료 (1/15)
-- [ ] 상품 관리 완료 (1/20)
-- [ ] 주문 시스템 일정 재조정
+## 📅 Next Milestones
+- [ ] User authentication completion (1/15)
+- [ ] Product management completion (1/20)
+- [ ] Order system schedule adjustment
 """
     
     success = client.create_markdown_note(
-        title="프로젝트 현황 대시보드",
+        title="Project Status Dashboard",
         content=table_content,
-        notebook="프로젝트 관리",
-        tags=["현황", "테이블", "대시보드"]
+        notebook="Project Management",
+        tags=["status", "table", "dashboard"]
     )
-    print(f"테이블 노트 생성: {'성공' if success else '실패'}")
+    print(f"Table note creation: {'successful' if success else 'failed'}")
     
-    # 4. 복합 마크다운 테스트
-    print("\n4. 복합 마크다운 테스트...")
+    # 4. Complex markdown test
+    print("\n4. Complex markdown test...")
     
-    current_time = UpNoteHelper.format_markdown_content("", add_timestamp=True).split("*작성일: ")[1].split("*")[0]
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M")
     
     js_code = '''```javascript
-// 이미지 레이지 로딩 구현 필요
+// Image lazy loading implementation needed
 const LazyImage = (props) => {
   const [loaded, setLoaded] = useState(false);
   
@@ -162,106 +183,110 @@ const LazyImage = (props) => {
 ```'''
 
     sql_code = '''```sql
--- 검색 성능 개선을 위한 인덱스 추가
+-- Add indexes for search performance improvement
 CREATE INDEX idx_products_category ON products(category_id);
 CREATE INDEX idx_orders_user_date ON orders(user_id, created_at);
 ```'''
 
-    meeting_notes = f"""# 📋 주간 팀 미팅 노트
+    meeting_notes = f"""# 📋 Weekly Team Meeting Notes
 
-**일시**: {current_time}
-**참석자**: 김팀장, 박개발, 이디자인, 최기획
+**Time**: {current_time}
+**Attendees**: Team Lead Kim, Developer Park, Designer Lee, Planner Choi
 
-## 🎯 주요 안건
+## 🎯 Key Agenda
 
-### 1. 스프린트 리뷰
-- ✅ **완료된 작업**
-  - 사용자 로그인/회원가입 기능
-  - 기본 UI 컴포넌트 라이브러리
-  - API 문서 초안
+### 1. Sprint Review
+- ✅ **Completed Tasks**
+  - User login/registration feature
+  - Basic UI component library
+  - API documentation draft
 
-- ⏳ **진행중인 작업**
-  - 상품 카탈로그 페이지
-  - 장바구니 기능
-  - 결제 시스템 연동
+- ⏳ **In Progress Tasks**
+  - Product catalog page
+  - Shopping cart feature
+  - Payment system integration
 
-### 2. 기술적 이슈
+### 2. Technical Issues
 
-#### 성능 최적화
+#### Performance Optimization
 {js_code}
 
-#### 데이터베이스 인덱싱
+#### Database Indexing
 {sql_code}
 
-### 3. 액션 아이템
+### 3. Action Items
 {UpNoteHelper.create_checklist([
-    "이미지 최적화 라이브러리 도입 검토 (박개발)",
-    "데이터베이스 인덱스 적용 (김팀장)",
-    "모바일 반응형 테스트 (이디자인)",
-    "사용자 테스트 시나리오 작성 (최기획)"
+    "Evaluate image optimization library (Developer Park)",
+    "Apply database indexes (Team Lead Kim)",
+    "Mobile responsive testing (Designer Lee)",
+    "Write user test scenarios (Planner Choi)"
 ])}
 
-## 📊 스프린트 메트릭스
+## 📊 Sprint Metrics
 
 {UpNoteHelper.create_table(
-    headers=["지표", "목표", "실제", "달성률"],
+    headers=["Metric", "Goal", "Actual", "Achievement"],
     rows=[
-        ["스토리 포인트", "40", "35", "87.5%"],
-        ["버그 수정", "15", "18", "120%"],
-        ["코드 커버리지", "80%", "75%", "93.8%"],
-        ["사용자 만족도", "4.5", "4.2", "93.3%"]
+        ["Story Points", "40", "35", "87.5%"],
+        ["Bug Fixes", "15", "18", "120%"],
+        ["Code Coverage", "80%", "75%", "93.8%"],
+        ["User Satisfaction", "4.5", "4.2", "93.3%"]
     ]
 )}
 
-## 🔮 다음 스프린트 계획
+## 🔮 Next Sprint Plan
 
-### 우선순위 높음
-1. **결제 시스템 완성** - 매출 직결
-2. **모바일 최적화** - 사용자 경험 개선
-3. **성능 튜닝** - 로딩 시간 단축
+### High Priority
+1. **Payment System Completion** - Directly affects revenue
+2. **Mobile Optimization** - Improves user experience
+3. **Performance Tuning** - Reduce loading time
 
-### 우선순위 중간
-- 관리자 대시보드 개선
-- 알림 시스템 구축
-- 다국어 지원 준비
+### Medium Priority
+- Admin dashboard improvement
+- Notification system setup
+- Multilingual support preparation
 
 ---
 
-> 💡 **회고**: 이번 스프린트는 전반적으로 목표를 달성했으나, 성능 이슈에 더 집중이 필요합니다.
+> 💡 **Retrospective**: This sprint generally achieved its goals, but we need to focus more on performance issues.
 
-**다음 미팅**: 2024년 1월 22일 (월) 오후 2시
+**Next Meeting**: January 22, 2024 (Mon) 2 PM
 """
     
     success = client.create_markdown_note(
-        title=f"주간 팀 미팅 - {UpNoteHelper.format_markdown_content('', add_timestamp=True).split('*작성일: ')[1].split('*')[0].split()[0]}",
+        title=f"Weekly Team Meeting - {datetime.now().strftime('%Y-%m-%d')}",
         content=meeting_notes,
-        notebook="회의록",
-        tags=["회의", "팀", "스프린트", "리뷰"]
+        notebook="Meeting Notes",
+        tags=["meeting", "team", "sprint", "review"]
     )
-    print(f"복합 마크다운 노트 생성: {'성공' if success else '실패'}")
+    print(f"Complex markdown note creation: {'successful' if success else 'failed'}")
 
 
 def debug_urls():
-    """생성되는 URL들을 확인"""
-    print("\n=== URL 디버깅 ===")
+    """Check generated URLs"""
+    print("\n=== URL Debugging ===")
     client = UpNoteClient()
     
     test_cases = [
         {
-            "name": "기본 텍스트",
+            "name": "Basic Text",
             "params": {"text": "Hello World", "title": "Test"}
         },
         {
-            "name": "마크다운 헤더",
-            "params": {"text": "# 제목\n## 부제목", "title": "Markdown Test"}
+            "name": "Markdown Headers",
+            "params": {"text": "# Title
+## Subtitle", "title": "Markdown Test"}
         },
         {
-            "name": "마크다운 리스트",
-            "params": {"text": "- [ ] 할일 1\n- [x] 완료된 일", "title": "Checklist"}
+            "name": "Markdown Lists",
+            "params": {"text": "- [ ] Task 1
+- [x] Completed task", "title": "Checklist"}
         },
         {
-            "name": "코드 블록",
-            "params": {"text": "```python\nprint('hello')\n```", "title": "Code"}
+            "name": "Code Blocks",
+            "params": {"text": "```python
+print('hello')
+```", "title": "Code"}
         }
     ]
     

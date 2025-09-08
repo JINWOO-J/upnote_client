@@ -1,2 +1,2 @@
-# URL scheme 방식이므로 외부 라이브러리 불필요
-# 기본 Python 라이브러리만 사용
+# No external libraries needed as it uses URL scheme method
+# Only uses basic Python libraries

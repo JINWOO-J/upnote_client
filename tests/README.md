@@ -1,111 +1,111 @@
-# UpNote 클라이언트 테스트
+# UpNote Client Tests
 
-이 디렉토리에는 UpNote 클라이언트의 기능을 검증하는 테스트 파일들이 포함되어 있습니다.
+This directory contains test files that verify the functionality of the UpNote client.
 
-## 테스트 파일들
+## Test Files
 
 ### 🧪 test_all_features.py
-모든 기능을 종합적으로 테스트하는 메인 테스트 파일입니다.
+Main test file that comprehensively tests all features.
 
-**테스트 항목:**
-- 기본 기능 (클라이언트 초기화, URL 생성, 파라미터 처리)
-- 헬퍼 함수 (체크리스트, 테이블, 마크다운 포맷팅)
-- 노트 생성 기능 (기본, 확장 파라미터, 특수 문자)
-- 특수 노트 타입 (할일, 회의록, 프로젝트, 일기)
-- 고급 기능 (검색, 노트북 관리, 내보내기)
-- 에러 처리 (빈 파라미터, None 값, 리스트 처리)
-- URL 길이 및 인코딩 (긴 텍스트, 특수 문자, 마크다운)
+**Test Items:**
+- Basic features (client initialization, URL generation, parameter processing)
+- Helper functions (checklists, tables, markdown formatting)
+- Note creation features (basic, extended parameters, special characters)
+- Special note types (tasks, meeting notes, project notes, diary)
+- Advanced features (search, notebook management, export)
+- Error handling (empty parameters, None values, list processing)
+- URL length and encoding (long text, special characters, markdown)
 
-**실행 방법:**
+**How to Run:**
 ```bash
 cd tests
 python test_all_features.py
 ```
 
 ### 📝 test_markdown.py
-마크다운 기능을 집중적으로 테스트합니다.
+Focuses on testing markdown features.
 
-**테스트 항목:**
-- 기본 마크다운 문법 (헤더, 굵게, 기울임, 코드)
-- 체크리스트 생성 및 렌더링
-- 테이블 생성 및 포맷팅
-- 복합 마크다운 문서 (코드 블록, 인용문, 링크)
-- URL 인코딩 및 특수 문자 처리
+**Test Items:**
+- Basic markdown syntax (headers, bold, italic, code)
+- Checklist creation and rendering
+- Table creation and formatting
+- Complex markdown documents (code blocks, quotes, links)
+- URL encoding and special character handling
 
-**실행 방법:**
+**How to Run:**
 ```bash
 cd tests
 python test_markdown.py
 ```
 
 ### 📊 final_test_summary.py
-모든 예제와 테스트를 실행하여 최종 검증을 수행합니다.
+Performs final validation by running all examples and tests.
 
-**기능:**
-- 모든 예제 파일 자동 실행
-- 성공/실패 결과 수집
-- 종합 성공률 계산
-- 제공 기능 요약 출력
+**Features:**
+- Automatically runs all example files
+- Collects success/failure results
+- Calculates overall success rate
+- Outputs feature summary
 
-**실행 방법:**
+**How to Run:**
 ```bash
 cd tests
 python final_test_summary.py
 ```
 
-## 테스트 실행 가이드
+## Test Execution Guide
 
-### 전체 테스트 실행
+### Run All Tests
 ```bash
-# 메인 테스트 실행
+# Run main test
 python tests/test_all_features.py
 
-# 마크다운 테스트 실행  
+# Run markdown test  
 python tests/test_markdown.py
 
-# 최종 검증 실행
+# Run final validation
 python tests/final_test_summary.py
 ```
 
-### 개별 기능 테스트
-각 테스트 파일은 독립적으로 실행 가능하며, 특정 기능만 테스트하고 싶을 때 유용합니다.
+### Individual Feature Tests
+Each test file can be run independently, which is useful when you want to test only specific features.
 
-## 테스트 결과 해석
+## Interpreting Test Results
 
-### 성공 케이스
+### Success Cases
 ```
-✅ 기본 기능 테스트 성공
-✅ 헬퍼 함수 테스트 성공
-📈 성공률: 100.0%
-🎉 모든 테스트가 성공적으로 통과했습니다!
-```
-
-### 실패 케이스
-```
-❌ 기본 기능 테스트 실패: 오류 메시지
-📈 성공률: 85.7%
-⚠️ 1개의 테스트가 실패했습니다.
+✅ Basic feature test successful
+✅ Helper function test successful
+📈 Success rate: 100.0%
+🎉 All tests passed successfully!
 ```
 
-## 주의사항
+### Failure Cases
+```
+❌ Basic feature test failed: Error message
+📈 Success rate: 85.7%
+⚠️ 1 test failed.
+```
 
-- **URL 생성 테스트**: 실제 UpNote 앱을 열지 않고 URL 생성만 테스트합니다.
-- **크로스 플랫폼**: macOS, Windows, Linux에서 모두 실행 가능합니다.
-- **의존성**: 외부 라이브러리 없이 Python 기본 라이브러리만 사용합니다.
+## Notes
 
-## 테스트 추가하기
+- **URL Generation Tests**: Only test URL generation without opening the actual UpNote app.
+- **Cross-Platform**: Can run on macOS, Windows, and Linux.
+- **Dependencies**: Uses only Python standard libraries, no external libraries required.
 
-새로운 기능을 추가했다면 해당 테스트도 추가해주세요:
+## Adding Tests
 
-1. `test_all_features.py`에 새로운 테스트 함수 추가
-2. 테스트 함수를 `run_all_tests()`의 테스트 목록에 추가
-3. 예상 결과와 실제 결과를 비교하는 assert 문 작성
+If you've added new features, please add corresponding tests:
 
-## 디버깅
+1. Add new test function to `test_all_features.py`
+2. Add test function to the test list in `run_all_tests()`
+3. Write assert statements comparing expected and actual results
 
-테스트 실패시 다음을 확인해보세요:
+## Debugging
 
-1. **모듈 import**: `upnote_client.py`가 올바른 위치에 있는지 확인
-2. **Python 버전**: Python 3.7 이상 사용
-3. **파일 권한**: 테스트 파일들이 실행 가능한지 확인
-4. **에러 메시지**: 상세한 에러 메시지를 확인하여 문제점 파악
+If tests fail, check the following:
+
+1. **Module import**: Verify that `upnote_client.py` is in the correct location
+2. **Python version**: Use Python 3.7 or higher
+3. **File permissions**: Verify that test files are executable
+4. **Error messages**: Check detailed error messages to identify the problem

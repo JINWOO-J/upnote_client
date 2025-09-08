@@ -1,338 +1,368 @@
-# UpNote URL Scheme Python 클라이언트
+# UpNote Python Client
 
-UpNote의 x-callback-url을 사용하여 노트를 작성하고 관리할 수 있는 Python 클래스입니다.
+[![PyPI version](https://badge.fury.io/py/upnote-python-client.svg)](https://badge.fury.io/py/upnote-python-client)
+[![Python versions](https://img.shields.io/pypi/pyversions/upnote-python-client.svg)](https://pypi.org/project/upnote-python-client/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 기능
+A powerful Python client for UpNote that leverages URL schemes (x-callback-url) to programmatically create and manage notes.
 
-- 노트 생성 (제목, 내용, 태그, 노트북 지정)
-- 노트 열기
-- 노트 검색
-- 노트북 생성
-- UpNote 앱 열기
-- 마크다운 헬퍼 기능 (체크리스트, 테이블 등)
+## Features
 
-## 설치
+- Create notes with titles, content, tags, and notebooks
+- Open existing notes
+- Search notes with advanced filtering capabilities
+- Create and manage notebooks and sub-notebooks
+- Launch the UpNote application
+- Markdown helper functions (checklists, tables, and more)
 
-외부 라이브러리가 필요하지 않습니다. Python 기본 라이브러리만 사용합니다.
+## Installation
 
-## 사용법
+### From PyPI (Recommended)
 
-### 기본 설정
+```bash
+pip install upnote-python-client
+```
+
+### From Source
+
+```bash
+git clone https://github.com/jinwoo-j/upnote_client.git
+cd upnote-python-client
+pip install -e .
+```
+
+## Quick Start
+
+### Basic Setup
 
 ```python
-from upnote_client import UpNoteClient
+from upnote_python_client import UpNoteClient
 
-# 클라이언트 초기화 (API 키 불필요)
+# Initialize client (no API key required)
 client = UpNoteClient()
 ```
 
-### 노트 생성
+### Creating Notes
 
 ```python
-# 기본 노트 생성
+# Basic note creation
 client.create_note(
-    text="노트 내용",
-    title="노트 제목"
+    text="Note content",
+    title="Note title"
 )
 
-# 상세 설정 노트 생성
+# Advanced note with multiple parameters
 client.create_note(
-    text="마크다운 **지원** 내용",
-    title="상세 노트",
-    notebook="프로젝트",
-    tags=["태그1", "태그2"]
+    text="Markdown **supported** content",
+    title="Advanced Note",
+    notebook="Projects",
+    tags=["important", "work"],
+    pinned=True,
+    color="blue",
+    priority="high"
 )
 ```
 
-### 헬퍼 기능 사용
+### Using Helper Functions
 
 ```python
-from upnote_client import UpNoteHelper
+from upnote_python_client import UpNoteHelper
 
-# 체크리스트 생성
+# Create checklist
 checklist = UpNoteHelper.create_checklist([
-    "할 일 1",
-    "할 일 2", 
-    "할 일 3"
+    "Task 1",
+    "Task 2", 
+    "Task 3"
 ])
 
-# 테이블 생성
+# Create table
 table = UpNoteHelper.create_table(
-    headers=["이름", "나이", "직업"],
+    headers=["Name", "Age", "Role"],
     rows=[
-        ["김철수", "30", "개발자"],
-        ["이영희", "25", "디자이너"]
+        ["John Doe", "30", "Developer"],
+        ["Jane Smith", "25", "Designer"]
     ]
 )
 
-# 타임스탬프 추가
+# Add timestamp
 content = UpNoteHelper.format_markdown_content(
-    "원본 내용",
+    "Original content",
     add_timestamp=True
 )
 
-# 완성된 노트 생성
+# Create complete note
 client.create_note(
-    text=f"# 작업 목록\n\n{checklist}\n\n# 팀 정보\n\n{table}",
-    title="프로젝트 현황"
+    text=f"# Task List
+
+{checklist}
+
+# Team Info
+
+{table}",
+    title="Project Status"
 )
 ```
 
-## 주요 메서드
+## Core Functionality
 
 ### UpNoteClient
 
-**노트 관련:**
-- `create_note()`: 새 노트 생성 (마크다운, 색상, 고정, 즐겨찾기, 알림 등 지원)
-- `create_markdown_note()`: 마크다운 최적화 노트 생성
-- `open_note()`: 특정 노트 열기 (편집 모드 지원)
-- `quick_note()`: 빠른 노트 추가
+#### Note Operations
+- `create_note()`: Create new notes with full parameter support (markdown, colors, pinning, favorites, reminders, etc.)
+- `create_markdown_note()`: Create notes optimized for markdown content
+- `open_note()`: Open existing notes (with edit mode support)
+- `quick_note()`: Add quick notes or append content
 
-**노트북 관련:**
-- `create_notebook()`: 노트북 생성 (색상, 하위 노트북 지원)
-- `open_notebook()`: 노트북 열기
+#### Notebook Operations
+- `create_notebook()`: Create notebooks (with color and sub-notebook support)
+- `open_notebook()`: Open existing notebooks
 
-**검색 및 기타:**
-- `search_notes()`: 고급 검색 (노트북, 태그 필터링)
-- `import_note()`: 파일에서 노트 가져오기
-- `export_note()`: 노트 내보내기
-- `open_upnote()`: UpNote 앱 열기
+#### Search and Utilities
+- `search_notes()`: Advanced search with notebook and tag filtering
+- `import_note()`: Import notes from files
+- `export_note()`: Export notes to various formats
+- `open_upnote()`: Launch the UpNote application
 
 ### UpNoteHelper
 
-- `format_markdown_content()`: 마크다운 콘텐츠 포맷팅
-- `create_checklist()`: 체크리스트 생성
-- `create_table()`: 테이블 생성
+- `format_markdown_content()`: Format markdown content with timestamps and separators
+- `create_checklist()`: Create markdown checklists
+- `create_table()`: Create markdown tables
 
-## URL Scheme 예제
+## URL Scheme Examples
 
-생성되는 URL 예시:
+Example URLs generated by the client:
 ```
 upnote://x-callback-url/note/new?text=Hello%20UpNote!&title=Test%20Note
 upnote://x-callback-url/note/new?text=Content&title=Title&notebook=Project&tags=tag1,tag2
 upnote://x-callback-url/search?query=keyword
 ```
 
-## 지원 플랫폼
+## Supported Platforms
 
-- macOS (open 명령어)
-- Windows (start 명령어)
-- Linux (xdg-open 명령어)
+- **macOS**: Uses `open` command
+- **Windows**: Uses `start` command
+- **Linux**: Uses `xdg-open` command
 
-## 예제
+## Examples
 
-자세한 사용 예제는 `examples/` 디렉토리의 파일들을 참고하세요:
+Comprehensive usage examples are available in the `examples/` directory:
 
-- `examples/example_usage.py`: 기본 사용법
-- `examples/advanced_example.py`: 고급 기능
-- `examples/comprehensive_example.py`: 종합 예제
+- `examples/example_usage.py`: Basic usage patterns
+- `examples/advanced_example.py`: Advanced features and techniques
+- `examples/comprehensive_example.py`: Complete feature demonstration
 
-## 테스트
+## Testing
 
-프로젝트의 모든 기능을 테스트하려면:
+Run the full test suite to verify functionality:
 
 ```bash
-# 전체 테스트 실행
+# Run all tests
 python tests/test_all_features.py
 
-# 마크다운 기능 테스트
+# Test markdown features
 python tests/test_markdown.py
 
-# 최종 검증
+# Final validation
 python tests/final_test_summary.py
 ```
 
-## 프로젝트 구조
+## Project Structure
 
 ```
 upnote_client/
-├── upnote_client.py          # 메인 클라이언트 모듈
-├── requirements.txt          # 의존성 (없음)
-├── setup.py                 # 설치 스크립트
-├── README.md                # 프로젝트 문서
-├── LICENSE                  # MIT 라이선스
-├── CHANGELOG.md             # 변경 로그
-├── examples/                # 사용 예제들
+├── upnote_client.py          # Main client module
+├── requirements.txt          # Dependencies (none)
+├── setup.py                 # Installation script
+├── README.md                # Project documentation
+├── LICENSE                  # MIT License
+├── CHANGELOG.md             # Change log
+├── examples/                # Usage examples
 │   ├── README.md
 │   ├── example_usage.py
 │   ├── advanced_example.py
 │   └── comprehensive_example.py
-├── tests/                   # 테스트 파일들
+├── tests/                   # Test files
 │   ├── README.md
 │   ├── test_all_features.py
 │   ├── test_markdown.py
 │   └── final_test_summary.py
-└── docs/                    # 문서
+└── docs/                    # Documentation
     └── API_REFERENCE.md
 ```
 
-## 주의사항
+## Important Notes
 
-- UpNote 앱이 설치되어 있어야 합니다
-- URL scheme 방식이므로 앱이 열리면서 노트가 생성됩니다
-- 콜백 URL을 설정하여 성공/실패 처리를 할 수 있습니다
+- The UpNote application must be installed on your system
+- Notes are created when the UpNote app opens (URL scheme method)
+- Callback URLs can be configured for success/failure handling
 
-
-### 고급 노트 생성
+### Advanced Note Creation
 ```python
-# 색상, 고정, 즐겨찾기가 있는 중요한 노트
+# Important note with color, pinning, and favorites
 client.create_note(
-    title="긴급 공지",
-    text="# 중요한 내용\n\n긴급히 확인이 필요합니다.",
+    title="Urgent Notice",
+    text="# Important Content
+
+Requires urgent confirmation.",
     markdown=True,
     pinned=True,
     favorite=True,
     color="red",
     reminder="2024-01-20T14:00:00",
-    tags=["긴급", "공지"]
+    tags=["urgent", "notice"]
 )
 
-# 마크다운 최적화 노트
+# Markdown-optimized note
 client.create_markdown_note(
-    title="프로젝트 계획",
-    content="# 계획\n\n- [ ] 작업 1\n- [ ] 작업 2",
-    notebook="프로젝트",
+    title="Project Plan",
+    content="# Plan
+
+- [ ] Task 1
+- [ ] Task 2",
+    notebook="Project",
     color="blue",
     add_timestamp=True
 )
 ```
 
-### 고급 검색
+### Advanced Search
 ```python
-# 특정 노트북에서 태그로 필터링하여 검색
+# Search with tag filtering in a specific notebook
 client.search_notes(
-    query="회의",
-    notebook="업무",
-    tags=["중요", "진행중"],
+    query="meeting",
+    notebook="Work",
+    tags=["important", "in-progress"],
     limit=10
 )
 ```
 
-### 노트북 관리
+### Notebook Management
 ```python
-# 색상이 있는 노트북 생성
-client.create_notebook("데이터 분석", color="purple")
+# Create notebook with color
+client.create_notebook("Data Analysis", color="purple")
 
-# 하위 노트북 생성
-client.create_notebook("월간 리포트", parent="데이터 분석")
+# Create sub-notebook
+client.create_notebook("Monthly Report", parent="Data Analysis")
 
-# 노트북 열기
-client.open_notebook("데이터 분석")
+# Open notebook
+client.open_notebook("Data Analysis")
 ```
 
-### 빠른 작업
+### Quick Actions
 ```python
-# 기존 노트에 내용 추가
-client.quick_note("새로운 아이디어 추가", append=True)
+# Add content to existing note
+client.quick_note("Add new idea", append=True)
 
-# 편집 모드로 노트 열기
-client.open_note(title="회의록", edit=True)
+# Open note in edit mode
+client.open_note(title="Meeting Notes", edit=True)
 ```
 
-### 파일 작업
+### File Operations
 ```python
-# 마크다운 파일 가져오기
-client.import_note("document.md", notebook="문서", format_type="markdown")
+# Import markdown file
+client.import_note("document.md", notebook="Documents", format_type="markdown")
 
-# 노트를 PDF로 내보내기
-client.export_note(title="보고서", format_type="pdf", destination="~/Documents/")
+# Export note to PDF
+client.export_note(title="Report", format_type="pdf", destination="~/Documents/")
 ```
 
-## 확장된 파라미터 지원
+## Extended Parameter Support
 
-### 노트 속성
-- `pinned`: 노트 고정
-- `favorite`: 즐겨찾기
-- `starred`: 별표 표시
-- `priority`: 우선순위 (high, medium, low, urgent)
-- `category`: 카테고리 분류
-- `readonly`: 읽기 전용 설정
+### Note Properties
+- `pinned`: Pin note to keep it visible
+- `favorite`: Add note to favorites
+- `starred`: Mark note with star
+- `priority`: Set priority level (high, medium, low, urgent)
+- `category`: Organize notes by category
+- `readonly`: Set read-only mode
 
-### 시간 관리
-- `due_date`: 마감일 설정
-- `created_date`: 생성일 지정
-- `modified_date`: 수정일 지정
-- `reminder`: 알림 시간
+### Time Management
+- `due_date`: Set due date for tasks
+- `created_date`: Specify creation date
+- `modified_date`: Specify modification date
+- `reminder`: Schedule reminder notifications
 
-### 보안 및 공유
-- `encrypted`: 암호화 여부
-- `password`: 노트 비밀번호
-- `shared`: 공유 여부
-- `public`: 공개 여부
+### Security and Sharing
+- `encrypted`: Enable encryption
+- `password`: Set note password
+- `shared`: Share note with others
+- `public`: Make note publicly accessible
 
-### 메타데이터
-- `author`: 작성자 정보
-- `source`: 출처 정보
-- `url`: 관련 URL 링크
-- `location`: 위치 정보
-- `attachments`: 첨부파일 목록
+### Metadata
+- `author`: Author information
+- `source`: Source reference
+- `url`: Related URL links
+- `location`: Location information
+- `attachments`: File attachments
 
-### 지원하는 색상
-- `red`: 빨간색 (긴급, 중요)
-- `blue`: 파란색 (정보, 계획)
-- `green`: 녹색 (완료, 성공)
-- `yellow`: 노란색 (주의, 대기)
-- `purple`: 보라색 (창작, 아이디어)
-- `gray`: 회색 (보관, 참고)
-- `orange`: 주황색 (경고, 알림)
-- `pink`: 분홍색 (개인, 취미)
+### Supported Colors
+- `red`: For urgent or important notes
+- `blue`: For informational or planning notes
+- `green`: For completed or successful items
+- `yellow`: For caution or pending items
+- `purple`: For creative or idea notes
+- `gray`: For archived or reference material
+- `orange`: For warnings or alerts
+- `pink`: For personal or hobby-related notes
 
-## 알림 시간 형식
-- ISO 8601: `"2024-01-20T14:00:00"`
-- 자연어: `"tomorrow 2pm"`, `"next friday"`
-- 상대시간: `"in 1 hour"`, `"in 30 minutes"`#
-# 특수 노트 생성 메서드
+## Reminder Time Formats
+- **ISO 8601**: `"2024-01-20T14:00:00"`
+- **Natural language**: `"tomorrow 2pm"`, `"next friday"`
+- **Relative time**: `"in 1 hour"`, `"in 30 minutes"`
 
-### 할 일 노트
+# Specialized Note Creation Methods
+
+### Task Notes
 ```python
 client.create_task_note(
-    title="주간 업무 계획",
-    tasks=["작업 1", "작업 2", "작업 3"],
+    title="Weekly Work Plan",
+    tasks=["Task 1", "Task 2", "Task 3"],
     due_date="2024-01-30",
     priority="high",
     reminder="2024-01-25T09:00:00"
 )
 ```
 
-### 회의록 노트
+### Meeting Notes
 ```python
 client.create_meeting_note(
-    title="팀 미팅",
+    title="Team Meeting",
     date="2024-01-25 14:00",
-    attendees=["김팀장", "박개발", "이디자인"],
-    agenda=["프로젝트 진행상황", "다음 스프린트 계획"],
-    location="회의실 A"
+    attendees=["Team Lead Kim", "Developer Park", "Designer Lee"],
+    agenda=["Project Progress", "Next Sprint Plan"],
+    location="Conference Room A"
 )
 ```
 
-### 프로젝트 노트
+### Project Notes
 ```python
 client.create_project_note(
-    project_name="웹사이트 리뉴얼",
-    description="기존 웹사이트의 UI/UX 개선",
-    milestones=["기획", "디자인", "개발", "테스트", "배포"],
-    team_members=["기획자", "디자이너", "개발자"],
+    project_name="Website Redesign",
+    description="UI/UX improvement of existing website",
+    milestones=["Planning", "Design", "Development", "Testing", "Deployment"],
+    team_members=["Planner", "Designer", "Developer"],
     due_date="2024-06-30"
 )
 ```
 
-### 일일 노트
+### Daily Notes
 ```python
 client.create_daily_note(
-    mood="😊 좋음",
-    weather="☀️ 맑음",
-    goals=["운동하기", "독서하기", "프로젝트 진행"],
-    reflections="오늘은 생산적인 하루였다."
+    mood="😊 Good",
+    weather="☀️ Sunny",
+    goals=["Exercise", "Reading", "Project Progress"],
+    reflections="Today was a productive day."
 )
 ```
 
-## 고급 사용 예제
+## Advanced Usage Examples
 
-### 암호화된 기밀 노트
+### Encrypted Confidential Note
 ```python
 client.create_note(
-    title="🔒 서버 정보",
-    text="중요한 서버 접속 정보...",
+    title="🔒 Server Information",
+    text="Important server access information...",
     encrypted=True,
     password="secure123!",
     color="red",
@@ -341,23 +371,23 @@ client.create_note(
 )
 ```
 
-### 위치 정보가 있는 여행 노트
+### Travel Note with Location Information
 ```python
 client.create_note(
-    title="✈️ 제주도 여행",
-    text="여행 계획 및 일정...",
-    location="제주특별자치도",
-    attachments=["항공권.pdf", "호텔예약.pdf"],
-    tags=["여행", "제주도"],
+    title="✈️ Jeju Island Trip",
+    text="Travel plans and schedule...",
+    location="Jeju Special Self-Governing Province",
+    attachments=["flight_ticket.pdf", "hotel_reservation.pdf"],
+    tags=["travel", "Jeju Island"],
     color="green"
 )
 ```
 
-### 우선순위가 높은 업무 노트
+### High Priority Work Note
 ```python
 client.create_note(
-    title="🚨 긴급 업무",
-    text="즉시 처리해야 할 업무...",
+    title="🚨 Urgent Work",
+    text="Work that needs immediate attention...",
     priority="urgent",
     pinned=True,
     favorite=True,

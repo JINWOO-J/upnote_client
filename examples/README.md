@@ -1,73 +1,73 @@
-# UpNote 클라이언트 예제
+# UpNote Client Examples
 
-이 디렉토리에는 UpNote 클라이언트의 다양한 사용 예제가 포함되어 있습니다.
+This directory contains various usage examples of the UpNote client.
 
-## 예제 파일들
+## Example Files
 
 ### 📝 example_usage.py
-기본적인 UpNote 클라이언트 사용법을 보여주는 예제입니다.
+An example showing basic usage of the UpNote client.
 
-**포함된 기능:**
-- 기본 노트 생성
-- 마크다운 노트 생성
-- 태그와 노트북 설정
-- 체크리스트와 테이블 생성
-- URL 생성 데모
+**Included Features:**
+- Basic note creation
+- Markdown note creation
+- Setting tags and notebooks
+- Creating checklists and tables
+- URL generation demo
 
-**실행 방법:**
+**How to Run:**
 ```bash
 cd examples
 python example_usage.py
 ```
 
 ### 🚀 advanced_example.py
-고급 기능들을 활용한 예제입니다.
+An example using advanced features.
 
-**포함된 기능:**
-- 색상과 고정이 있는 중요한 노트
-- 프로젝트 계획 노트
-- 회의록 템플릿
-- 노트북 생성 및 관리
-- 고급 검색 기능
-- 편집 모드로 노트 열기
+**Included Features:**
+- Important notes with color and pinning
+- Project plan notes
+- Meeting note templates
+- Notebook creation and management
+- Advanced search features
+- Opening notes in edit mode
 
-**실행 방법:**
+**How to Run:**
 ```bash
 cd examples
 python advanced_example.py
 ```
 
 ### 🌟 comprehensive_example.py
-모든 확장된 파라미터를 사용하는 종합 예제입니다.
+A comprehensive example using all extended parameters.
 
-**포함된 기능:**
-- 25개 이상의 파라미터를 사용한 복합 노트
-- 암호화된 기밀 노트
-- 위치 정보가 있는 여행 노트
-- 특수 노트 타입들 (할일, 회의록, 프로젝트, 일기)
-- URL 디버깅 기능
+**Included Features:**
+- Complex notes using over 25 parameters
+- Encrypted confidential notes
+- Travel notes with location information
+- Special note types (tasks, meeting notes, project notes, diary)
+- URL debugging features
 
-**실행 방법:**
+**How to Run:**
 ```bash
 cd examples
 python comprehensive_example.py
 ```
 
-## 사용 전 준비사항
+## Prerequisites
 
-1. **UpNote 앱 설치**: 실제 노트를 생성하려면 UpNote 앱이 설치되어 있어야 합니다.
+1. **UpNote App Installation**: UpNote app must be installed to create actual notes.
 
-2. **Python 환경**: Python 3.7 이상이 필요합니다.
+2. **Python Environment**: Python 3.7 or higher is required.
 
-3. **모듈 경로**: 예제를 실행하기 전에 상위 디렉토리의 `upnote_client.py`를 import할 수 있도록 경로를 설정해야 합니다.
+3. **Module Path**: Before running the examples, you need to set up the path to import `upnote_client.py` from the parent directory.
 
-## 주의사항
+## Notes
 
-- 예제들은 실제로 UpNote 앱을 열고 노트를 생성합니다.
-- 테스트 목적으로 많은 노트가 생성될 수 있으니 주의하세요.
-- URL scheme 방식이므로 UpNote 앱이 설치되어 있어야 정상 동작합니다.
+- The examples will actually open the UpNote app and create notes.
+- Be careful as many notes may be created for testing purposes.
+- Since it uses the URL scheme method, the UpNote app must be installed for proper operation.
 
-## 커스터마이징
+## Customization
 
-각 예제 파일을 참고하여 자신만의 노트 생성 스크립트를 만들 수 있습니다. 
-`upnote_client.py`의 모든 메서드와 파라미터를 활용해보세요!
+You can refer to each example file to create your own note creation scripts.
+Try utilizing all methods and parameters of `upnote_client.py`!

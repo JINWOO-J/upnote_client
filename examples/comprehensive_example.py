@@ -1,99 +1,119 @@
 #!/usr/bin/env python3
 """
-UpNote 종합 기능 예제
-확장된 파라미터들과 특수 노트 생성 기능들을 보여주는 예제
+UpNote Comprehensive Feature Example
+Example showing extended parameters and special note creation features
 """
 
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from upnote_client import UpNoteClient, UpNoteHelper
+# Try importing package
+try:
+    from upnote_python_client import UpNoteClient, UpNoteHelper
+except ImportError:
+    # For development environment - load module directly
+    import importlib.util
+    import os
+    
+    # Path to upnote_python_client/__init__.py file
+    module_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
+                              'upnote_python_client', '__init__.py')
+    
+    if os.path.exists(module_path):
+        spec = importlib.util.spec_from_file_location("upnote_python_client", module_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        UpNoteClient = module.UpNoteClient
+        UpNoteHelper = module.UpNoteHelper
+    else:
+        raise ImportError("Could not find upnote_python_client module. Please run 'pip install -e .'")
+
 from datetime import datetime, timedelta
 
 
 def test_extended_parameters():
-    """확장된 파라미터들을 테스트"""
+    """Test extended parameters"""
     client = UpNoteClient()
     
-    print("=== 확장된 파라미터 테스트 ===")
+    print("=== Extended Parameters Test ===")
     
-    # 1. 모든 파라미터를 사용한 복합 노트
-    print("1. 모든 파라미터를 사용한 복합 노트 생성...")
+    # 1. Complex note using all parameters
+    print("1. Creating complex note with all parameters...")
     
-    comprehensive_content = """# 🚀 프로젝트 킥오프 미팅
+    comprehensive_content = """# 🚀 Project Kickoff Meeting
 
-## 프로젝트 개요
-새로운 AI 기반 노트 앱 개발 프로젝트
+## Project Overview
+New AI-based note app development project
 
-## 주요 기능
-- 자동 태그 생성
-- 스마트 검색
-- 음성 인식
-- 다국어 지원
+## Key Features
+- Automatic tag generation
+- Smart search
+- Voice recognition
+- Multilingual support
 
-## 기술 스택
+## Tech Stack
 {tech_stack}
 
-## 일정
+## Schedule
 {schedule}
 
-## 팀 역할
+## Team Roles
 {team_roles}
 
-## 예산 계획
-- 개발: $100,000
-- 마케팅: $50,000
-- 운영: $30,000
-- **총합**: $180,000
+## Budget Plan
+- Development: $100,000
+- Marketing: $50,000
+- Operations: $30,000
+- **Total**: $180,000
 
-## 위험 요소
-- 기술적 복잡성
-- 시장 경쟁
-- 인력 부족
+## Risk Factors
+- Technical complexity
+- Market competition
+- Staff shortage
 
-## 성공 지표
-- 사용자 10,000명 달성
-- 앱스토어 평점 4.5 이상
-- 월 매출 $10,000 달성
+## Success Metrics
+- 10,000 users achieved
+- App Store rating above 4.5
+- Monthly revenue of $10,000 achieved
 """.format(
         tech_stack=UpNoteHelper.create_table(
-            headers=["분야", "기술", "버전", "담당자"],
+            headers=["Area", "Technology", "Version", "Person"],
             rows=[
-                ["Frontend", "React Native", "0.72", "김모바일"],
-                ["Backend", "Node.js", "18.17", "박서버"],
-                ["Database", "MongoDB", "6.0", "이디비"],
-                ["AI/ML", "TensorFlow", "2.13", "최에이아이"],
-                ["Cloud", "AWS", "Latest", "정클라우드"]
+                ["Frontend", "React Native", "0.72", "Kim Mobile"],
+                ["Backend", "Node.js", "18.17", "Park Server"],
+                ["Database", "MongoDB", "6.0", "Lee DB"],
+                ["AI/ML", "TensorFlow", "2.13", "Choi AI"],
+                ["Cloud", "AWS", "Latest", "Jeong Cloud"]
             ]
         ),
         schedule=UpNoteHelper.create_checklist([
-            "요구사항 분석 (1주차)",
-            "시스템 설계 (2-3주차)",
-            "프로토타입 개발 (4-6주차)",
-            "MVP 개발 (7-12주차)",
-            "베타 테스트 (13-14주차)",
-            "정식 출시 (15주차)"
+            "Requirements analysis (Week 1)",
+            "System design (Weeks 2-3)",
+            "Prototype development (Weeks 4-6)",
+            "MVP development (Weeks 7-12)",
+            "Beta testing (Weeks 13-14)",
+            "Official launch (Week 15)"
         ]),
         team_roles=UpNoteHelper.create_table(
-            headers=["이름", "역할", "경험", "책임"],
+            headers=["Name", "Role", "Experience", "Responsibility"],
             rows=[
-                ["김팀장", "Project Manager", "10년", "전체 관리"],
-                ["박개발", "Lead Developer", "8년", "아키텍처 설계"],
-                ["이디자인", "UI/UX Designer", "5년", "사용자 경험"],
-                ["최마케팅", "Marketing", "6년", "시장 분석"],
-                ["정품질", "QA Engineer", "4년", "품질 보증"]
+                ["Kim Team Lead", "Project Manager", "10 years", "Overall management"],
+                ["Park Developer", "Lead Developer", "8 years", "Architecture design"],
+                ["Lee Design", "UI/UX Designer", "5 years", "User experience"],
+                ["Choi Marketing", "Marketing", "6 years", "Market analysis"],
+                ["Jeong QA", "QA Engineer", "4 years", "Quality assurance"]
             ]
         )
     )
     
     success = client.create_note(
         text=comprehensive_content,
-        title="🚀 AI 노트앱 프로젝트 킥오프",
-        notebook="프로젝트 관리",
+        title="🚀 AI Note App Project Kickoff",
+        notebook="Project Management",
         folder="2024/Q1",
-        tags=["프로젝트", "킥오프", "AI", "모바일앱"],
-        category="업무",
+        tags=["project", "kickoff", "AI", "mobile-app"],
+        category="work",
         markdown=True,
         pinned=True,
         favorite=True,
@@ -102,42 +122,42 @@ def test_extended_parameters():
         priority="high",
         due_date="2024-06-30",
         reminder="2024-01-22T09:00:00",
-        author="프로젝트 매니저",
-        source="킥오프 미팅",
+        author="Project Manager",
+        source="Kickoff Meeting",
         url="https://company.com/projects/ai-note-app",
         shared=True,
         format="markdown",
         encoding="utf-8"
     )
-    print(f"복합 노트 생성: {'성공' if success else '실패'}")
+    print(f"Complex note creation: {'successful' if success else 'failed'}")
     
-    # 2. 암호화된 기밀 노트
-    print("\n2. 암호화된 기밀 노트 생성...")
+    # 2. Encrypted confidential note
+    print("\n2. Creating encrypted confidential note...")
     
-    confidential_content = """# 🔒 기밀 정보
+    confidential_content = """# 🔒 Confidential Information
 
-## 서버 접속 정보
-- **호스트**: production.company.com
-- **사용자**: admin
-- **포트**: 22
+## Server Access Information
+- **Host**: production.company.com
+- **User**: admin
+- **Port**: 22
 
-## API 키
+## API Keys
 - **OpenAI**: sk-...
 - **AWS**: AKIA...
 - **Stripe**: pk_live_...
 
-## 데이터베이스 정보
-- **연결 문자열**: mongodb://...
-- **백업 위치**: s3://backups/...
+## Database Information
+- **Connection String**: mongodb://...
+- **Backup Location**: s3://backups/...
 
-⚠️ **주의**: 이 정보는 절대 외부에 공유하지 마세요.
+⚠️ **Warning**: Do not share this information externally.
 """
     
     success = client.create_note(
         text=confidential_content,
-        title="🔒 서버 및 API 정보",
-        notebook="기밀",
-        tags=["기밀", "서버", "API", "보안"],
+        title="🔒 Server and API Information",
+        notebook="Confidential",
+        tags=["confidential", "server", "API", "security"],
         color="red",
         encrypted=True,
         password="secure123!",
@@ -146,205 +166,205 @@ def test_extended_parameters():
         public=False,
         priority="urgent"
     )
-    print(f"기밀 노트 생성: {'성공' if success else '실패'}")
+    print(f"Confidential note creation: {'successful' if success else 'failed'}")
     
-    # 3. 위치 정보가 있는 여행 노트
-    print("\n3. 위치 정보가 있는 여행 노트 생성...")
+    # 3. Travel note with location information
+    print("\n3. Creating travel note with location information...")
     
-    travel_content = """# ✈️ 제주도 여행 계획
+    travel_content = """# ✈️ Jeju Island Travel Plan
 
-## 여행 일정
-**기간**: 2024년 3월 15일 ~ 3월 18일 (3박 4일)
+## Travel Schedule
+**Period**: March 15-18, 2024 (3 nights 4 days)
 
-## 숙소 정보
-- **호텔**: 제주 신라호텔
-- **주소**: 제주특별자치도 제주시 연동
-- **체크인**: 15:00
-- **체크아웃**: 11:00
+## Accommodation Information
+- **Hotel**: Jeju Shilla Hotel
+- **Address**: Jeju Special Self-Governing Province Jeju City Yeondong
+- **Check-in**: 15:00
+- **Check-out**: 11:00
 
-## 방문 예정지
+## Places to Visit
 {places}
 
-## 맛집 리스트
+## Restaurant List
 {restaurants}
 
-## 준비물
+## Packing List
 {packing_list}
 
-## 예산
-- 항공료: 400,000원
-- 숙박비: 600,000원
-- 식비: 300,000원
-- 관광비: 200,000원
-- **총 예산**: 1,500,000원
+## Budget
+- Airfare: 400,000 KRW
+- Accommodation: 600,000 KRW
+- Food: 300,000 KRW
+- Tourism: 200,000 KRW
+- **Total Budget**: 1,500,000 KRW
 """.format(
         places=UpNoteHelper.create_checklist([
-            "성산일출봉 (일출 보기)",
-            "한라산 국립공원 (등산)",
-            "우도 (자전거 투어)",
-            "천지연 폭포 (산책)",
-            "협재해수욕장 (해변 휴식)",
-            "제주 민속촌 (문화 체험)"
+            "Seongsan Ilchulbong (Sunrise viewing)",
+            "Hallasan National Park (Hiking)",
+            "Udo (Bicycle tour)",
+            "Cheonjiyeon Waterfall (Walking)",
+            "Hyeopjae Beach (Beach relaxation)",
+            "Jeju Folk Village (Cultural experience)"
         ]),
         restaurants=UpNoteHelper.create_table(
-            headers=["식당명", "음식", "위치", "예산"],
+            headers=["Restaurant", "Food", "Location", "Budget"],
             rows=[
-                ["흑돼지 맛집", "흑돼지 구이", "제주시", "50,000원"],
-                ["해녀의 집", "전복죽", "성산", "30,000원"],
-                ["올레국수", "고기국수", "서귀포", "15,000원"],
-                ["카페 델문도", "커피", "애월", "20,000원"]
+                ["Black Pork Restaurant", "Black Pork BBQ", "Jeju City", "50,000 KRW"],
+                ["Haenyeo's House", "Abalone Porridge", "Seongsan", "30,000 KRW"],
+                ["Olle Noodles", "Meat Noodles", "Seogwipo", "15,000 KRW"],
+                ["Cafe Del Mundo", "Coffee", "Aewol", "20,000 KRW"]
             ]
         ),
         packing_list=UpNoteHelper.create_checklist([
-            "여권/신분증",
-            "항공권 출력본",
-            "카메라 및 충전기",
-            "편한 신발 (등산화)",
-            "선크림 및 모자",
-            "우산 (날씨 대비)"
+            "Passport/ID",
+            "Printed flight tickets",
+            "Camera and charger",
+            "Comfortable shoes (hiking boots)",
+            "Sunscreen and hat",
+            "Umbrella (weather preparation)"
         ])
     )
     
     success = client.create_note(
         text=travel_content,
-        title="✈️ 제주도 여행 계획",
-        notebook="여행",
-        tags=["여행", "제주도", "휴가", "계획"],
+        title="✈️ Jeju Island Travel Plan",
+        notebook="Travel",
+        tags=["travel", "Jeju Island", "vacation", "plan"],
         color="green",
-        location="제주특별자치도",
+        location="Jeju Special Self-Governing Province",
         due_date="2024-03-15",
         reminder="2024-03-10T10:00:00",
         attachments=["flight_ticket.pdf", "hotel_reservation.pdf"],
         template="travel"
     )
-    print(f"여행 노트 생성: {'성공' if success else '실패'}")
+    print(f"Travel note creation: {'successful' if success else 'failed'}")
 
 
 def test_special_note_types():
-    """특수 노트 타입들 테스트"""
+    """Test special note types"""
     client = UpNoteClient()
     
-    print("\n=== 특수 노트 타입 테스트 ===")
+    print("\n=== Special Note Types Test ===")
     
-    # 1. 할 일 노트
-    print("1. 할 일 노트 생성...")
+    # 1. Task note
+    print("1. Creating task note...")
     success = client.create_task_note(
-        title="주간 업무 계획",
+        title="Weekly Work Plan",
         tasks=[
-            "프로젝트 제안서 작성",
-            "클라이언트 미팅 준비",
-            "코드 리뷰 완료",
-            "문서 업데이트",
-            "팀 회의 참석"
+            "Write project proposal",
+            "Prepare client meeting",
+            "Complete code review",
+            "Update documentation",
+            "Attend team meeting"
         ],
-        notebook="업무",
+        notebook="Work",
         due_date="2024-01-26",
         priority="high",
-        tags=["업무", "주간계획"],
+        tags=["work", "weekly-plan"],
         reminder="2024-01-22T09:00:00"
     )
-    print(f"할 일 노트 생성: {'성공' if success else '실패'}")
+    print(f"Task note creation: {'successful' if success else 'failed'}")
     
-    # 2. 회의록 노트
-    print("\n2. 회의록 노트 생성...")
+    # 2. Meeting note
+    print("\n2. Creating meeting note...")
     success = client.create_meeting_note(
-        title="Q1 전략 회의",
-        date="2024년 1월 25일 (목) 14:00",
-        attendees=["김대표", "박이사", "이부장", "최팀장"],
+        title="Q1 Strategic Meeting",
+        date="January 25, 2024 (Thu) 14:00",
+        attendees=["CEO Kim", "Director Park", "Manager Lee", "Team Lead Choi"],
         agenda=[
-            "Q4 실적 리뷰",
-            "Q1 목표 설정",
-            "신규 프로젝트 논의",
-            "예산 계획 승인"
+            "Q4 performance review",
+            "Q1 goal setting",
+            "New project discussion",
+            "Budget plan approval"
         ],
-        notebook="회의록",
-        location="본사 대회의실",
-        tags=["전략회의", "Q1", "경영진"]
+        notebook="Meeting Notes",
+        location="Head Office Conference Room",
+        tags=["strategic-meeting", "Q1", "executive"]
     )
-    print(f"회의록 노트 생성: {'성공' if success else '실패'}")
+    print(f"Meeting note creation: {'successful' if success else 'failed'}")
     
-    # 3. 프로젝트 노트
-    print("\n3. 프로젝트 노트 생성...")
+    # 3. Project note
+    print("\n3. Creating project note...")
     success = client.create_project_note(
-        project_name="모바일 앱 리뉴얼",
-        description="기존 모바일 앱의 UI/UX를 개선하고 새로운 기능을 추가하는 프로젝트",
+        project_name="Mobile App Renewal",
+        description="A project to improve the UI/UX of the existing mobile app and add new features",
         milestones=[
-            "사용자 리서치 완료",
-            "와이어프레임 설계",
-            "UI 디자인 완성",
-            "프론트엔드 개발",
-            "백엔드 API 연동",
-            "테스트 및 QA",
-            "앱스토어 배포"
+            "User research completed",
+            "Wireframe design",
+            "UI design completion",
+            "Frontend development",
+            "Backend API integration",
+            "Testing and QA",
+            "App Store deployment"
         ],
         team_members=[
-            "김기획 (기획자)",
-            "박디자인 (UI/UX 디자이너)",
-            "이개발 (프론트엔드 개발자)",
-            "최서버 (백엔드 개발자)",
-            "정테스트 (QA 엔지니어)"
+            "Kim Planner (Planner)",
+            "Park Design (UI/UX Designer)",
+            "Lee Developer (Frontend Developer)",
+            "Choi Server (Backend Developer)",
+            "Jeong Test (QA Engineer)"
         ],
         due_date="2024-06-30",
-        notebook="프로젝트",
+        notebook="Projects",
         priority="high"
     )
-    print(f"프로젝트 노트 생성: {'성공' if success else '실패'}")
+    print(f"Project note creation: {'successful' if success else 'failed'}")
     
-    # 4. 일일 노트
-    print("\n4. 일일 노트 생성...")
+    # 4. Daily note
+    print("\n4. Creating daily note...")
     success = client.create_daily_note(
-        mood="😊 좋음",
-        weather="☀️ 맑음",
+        mood="😊 Good",
+        weather="☀️ Sunny",
         goals=[
-            "운동 30분 하기",
-            "독서 1시간",
-            "프로젝트 진행상황 정리",
-            "가족과 저녁 식사"
+            "Exercise for 30 minutes",
+            "Read for 1 hour",
+            "Organize project progress",
+            "Dinner with family"
         ],
-        reflections="오늘은 새로운 기술을 배우는 재미있는 하루였다. 특히 UpNote API를 활용한 자동화가 매우 유용했다.",
-        notebook="일기"
+        reflections="Today was a fun day learning new technology. UpNote API automation was particularly useful.",
+        notebook="Diary"
     )
-    print(f"일일 노트 생성: {'성공' if success else '실패'}")
+    print(f"Daily note creation: {'successful' if success else 'failed'}")
 
 
 def test_url_debugging():
-    """URL 생성 디버깅"""
-    print("\n=== URL 디버깅 ===")
+    """URL generation debugging"""
+    print("\n=== URL Debugging ===")
     client = UpNoteClient()
     
-    # 복잡한 파라미터 조합 테스트
+    # Test complex parameter combinations
     complex_params = {
-        "title": "복잡한 노트 테스트",
-        "text": "# 제목\n\n**굵은 글씨**와 *기울임*\n\n- 목록 1\n- 목록 2",
-        "notebook": "테스트 노트북",
-        "tags": ["테스트", "복잡함", "디버깅"],
+        "title": "Complex Note Test",
+        "text": "# Title\n\n**Bold text** and *italic*\n\n- List 1\n- List 2",
+        "notebook": "Test Notebook",
+        "tags": ["test", "complex", "debugging"],
         "markdown": True,
         "pinned": True,
         "favorite": True,
         "color": "purple",
         "priority": "high",
         "reminder": "2024-01-25T15:30:00",
-        "location": "서울특별시 강남구",
-        "author": "테스터",
+        "location": "Seoul Gangnam-gu",
+        "author": "Tester",
         "encrypted": False,
         "shared": True,
         "format": "markdown"
     }
     
     url = client.debug_url("note/new", complex_params)
-    print(f"\n복잡한 파라미터 URL:")
-    print(f"길이: {len(url)} 문자")
+    print(f"\nComplex parameter URL:")
+    print(f"Length: {len(url)} characters")
     print(f"URL: {url[:100]}..." if len(url) > 100 else f"URL: {url}")
     
-    # 간단한 파라미터 테스트
+    # Test simple parameters
     simple_params = {
-        "title": "간단한 노트",
-        "text": "간단한 내용",
+        "title": "Simple Note",
+        "text": "Simple content",
         "markdown": True
     }
     
     simple_url = client.debug_url("note/new", simple_params)
-    print(f"\n간단한 파라미터 URL:")
+    print(f"\nSimple parameter URL:")
     print(f"URL: {simple_url}")
 
 

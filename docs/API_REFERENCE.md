@@ -1,89 +1,91 @@
-# UpNote 클라이언트 API 레퍼런스
+# UpNote Client API Reference
 
-## 클래스 개요
+## Class Overview
 
 ### UpNoteClient
-UpNote의 x-callback-url을 사용하여 노트를 작성하고 관리하는 메인 클래스입니다.
+Main class for creating and managing notes using UpNote's x-callback-url.
 
 ### UpNoteHelper
-마크다운 콘텐츠 생성과 포맷팅을 위한 헬퍼 클래스입니다.
+Helper class for creating and formatting markdown content.
 
 ---
 
-## UpNoteClient 메서드
+## UpNoteClient Methods
 
-### 기본 노트 관리
+### Basic Note Management
 
 #### `create_note(**kwargs) -> bool`
-새로운 노트를 생성합니다.
+Creates a new note.
 
-**파라미터:**
-- `text` (str, optional): 노트 내용
-- `title` (str, optional): 노트 제목
-- `notebook` (str, optional): 노트북 이름
-- `tags` (List[str], optional): 태그 목록
-- `markdown` (bool, optional): 마크다운 렌더링 여부 (기본값: True)
+**Parameters:**
+- `text` (str, optional): Note content
+- `title` (str, optional): Note title
+- `notebook` (str, optional): Notebook name
+- `tags` (List[str], optional): List of tags
+- `markdown` (bool, optional): Whether to render as markdown (default: True)
 
-**노트 속성:**
-- `pinned` (bool, optional): 노트 고정 여부
-- `favorite` (bool, optional): 즐겨찾기 여부
-- `starred` (bool, optional): 별표 표시 여부
-- `color` (str, optional): 노트 색상 (red, blue, green, yellow, purple, gray, orange, pink)
-- `priority` (str, optional): 우선순위 (high, medium, low, urgent)
+**Note Properties:**
+- `pinned` (bool, optional): Whether to pin the note
+- `favorite` (bool, optional): Whether to mark as favorite
+- `starred` (bool, optional): Whether to star the note
+- `color` (str, optional): Note color (red, blue, green, yellow, purple, gray, orange, pink)
+- `priority` (str, optional): Priority (high, medium, low, urgent)
 
-**시간 관련:**
-- `reminder` (str, optional): 알림 시간 (ISO 8601 형식 또는 자연어)
-- `due_date` (str, optional): 마감일 (ISO 8601 형식)
-- `created_date` (str, optional): 생성일 지정
-- `modified_date` (str, optional): 수정일 지정
+**Time-related:**
+- `reminder` (str, optional): Reminder time (ISO 8601 format or natural language)
+- `due_date` (str, optional): Due date (ISO 8601 format)
+- `created_date` (str, optional): Created date
+- `modified_date` (str, optional): Modified date
 
-**메타데이터:**
-- `author` (str, optional): 작성자 정보
-- `source` (str, optional): 출처 정보
-- `url` (str, optional): 관련 URL 링크
-- `location` (str, optional): 위치 정보 또는 GPS 좌표
-- `template` (str, optional): 사용할 템플릿 이름
-- `folder` (str, optional): 폴더 경로
-- `category` (str, optional): 카테고리 분류
+**Metadata:**
+- `author` (str, optional): Author information
+- `source` (str, optional): Source information
+- `url` (str, optional): Related URL link
+- `location` (str, optional): Location information or GPS coordinates
+- `template` (str, optional): Template name to use
+- `folder` (str, optional): Folder path
+- `category` (str, optional): Category classification
 
-**첨부파일:**
-- `attachment` (str, optional): 단일 첨부파일 경로
-- `attachments` (List[str], optional): 여러 첨부파일 경로 목록
+**Attachments:**
+- `attachment` (str, optional): Single attachment file path
+- `attachments` (List[str], optional): Multiple attachment file paths
 
-**보안 및 접근 제어:**
-- `encrypted` (bool, optional): 암호화 여부
-- `password` (str, optional): 노트 비밀번호
-- `readonly` (bool, optional): 읽기 전용 여부
-- `shared` (bool, optional): 공유 여부
-- `public` (bool, optional): 공개 여부
+**Security and Access Control:**
+- `encrypted` (bool, optional): Whether to encrypt
+- `password` (str, optional): Note password
+- `readonly` (bool, optional): Read-only status
+- `shared` (bool, optional): Whether to share
+- `public` (bool, optional): Whether to make public
 
-**형식 및 인코딩:**
-- `format` (str, optional): 파일 형식 (markdown, html, txt, rtf)
-- `encoding` (str, optional): 텍스트 인코딩 (utf-8, utf-16 등)
+**Format and Encoding:**
+- `format` (str, optional): File format (markdown, html, txt, rtf)
+- `encoding` (str, optional): Text encoding (utf-8, utf-16, etc.)
 
-**콜백 URL:**
-- `x_success` (str, optional): 성공시 콜백 URL
-- `x_error` (str, optional): 실패시 콜백 URL
-- `x_cancel` (str, optional): 취소시 콜백 URL
+**Callback URLs:**
+- `x_success` (str, optional): Success callback URL
+- `x_error` (str, optional): Error callback URL
+- `x_cancel` (str, optional): Cancel callback URL
 
-**반환값:** `bool` - 실행 성공 여부
+**Return Value:** `bool` - Whether execution was successful
 
-**예제:**
+**Example:**
 ```python
 client = UpNoteClient()
 
-# 기본 노트 생성
+# Create basic note
 client.create_note(
-    title="회의 노트",
-    text="오늘 회의 내용을 정리합니다.",
-    tags=["회의", "업무"]
+    title="Meeting Notes",
+    text="Summarize today's meeting content.",
+    tags=["meeting", "work"]
 )
 
-# 고급 설정 노트 생성
+# Create note with advanced settings
 client.create_note(
-    title="중요 프로젝트",
-    text="# 프로젝트 개요\n\n중요한 프로젝트입니다.",
-    notebook="업무",
+    title="Important Project",
+    text="# Project Overview
+
+Important project.",
+    notebook="Work",
     priority="high",
     pinned=True,
     color="red",
@@ -93,335 +95,339 @@ client.create_note(
 ```
 
 #### `open_note(**kwargs) -> bool`
-기존 노트를 엽니다.
+Opens an existing note.
 
-**파라미터:**
-- `note_id` (str, optional): 열 노트 ID
-- `title` (str, optional): 노트 제목으로 검색하여 열기
-- `edit` (bool, optional): 편집 모드로 열기 여부
-- `x_success` (str, optional): 성공시 콜백 URL
-- `x_error` (str, optional): 실패시 콜백 URL
-- `x_cancel` (str, optional): 취소시 콜백 URL
+**Parameters:**
+- `note_id` (str, optional): Note ID to open
+- `title` (str, optional): Open note by title search
+- `edit` (bool, optional): Whether to open in edit mode
+- `x_success` (str, optional): Success callback URL
+- `x_error` (str, optional): Error callback URL
+- `x_cancel` (str, optional): Cancel callback URL
 
-**예제:**
+**Example:**
 ```python
-# ID로 노트 열기
+# Open note by ID
 client.open_note(note_id="12345")
 
-# 제목으로 노트 찾아서 편집 모드로 열기
-client.open_note(title="회의 노트", edit=True)
+# Find note by title and open in edit mode
+client.open_note(title="Meeting Notes", edit=True)
 ```
 
-### 특수 노트 생성
+### Special Note Creation
 
 #### `create_markdown_note(**kwargs) -> bool`
-마크다운에 최적화된 노트를 생성합니다.
+Creates a note optimized for markdown.
 
-**파라미터:**
-- `title` (str): 노트 제목
-- `content` (str): 마크다운 콘텐츠
-- `notebook` (str, optional): 노트북 이름
-- `tags` (List[str], optional): 태그 목록
-- `add_timestamp` (bool): 타임스탬프 추가 여부
-- `pinned` (bool, optional): 노트 고정 여부
-- `favorite` (bool, optional): 즐겨찾기 여부
-- `color` (str, optional): 노트 색상
-- `reminder` (str, optional): 알림 시간
+**Parameters:**
+- `title` (str): Note title
+- `content` (str): Markdown content
+- `notebook` (str, optional): Notebook name
+- `tags` (List[str], optional): List of tags
+- `add_timestamp` (bool): Whether to add timestamp
+- `pinned` (bool, optional): Whether to pin the note
+- `favorite` (bool, optional): Whether to mark as favorite
+- `color` (str, optional): Note color
+- `reminder` (str, optional): Reminder time
 
-**예제:**
+**Example:**
 ```python
 client.create_markdown_note(
-    title="마크다운 노트",
-    content="# 제목\n\n**굵은 글씨**와 *기울임*",
+    title="Markdown Note",
+    content="# Title
+
+**Bold text** and *italic*",
     add_timestamp=True,
     color="blue"
 )
 ```
 
 #### `create_task_note(**kwargs) -> bool`
-할 일 목록이 있는 노트를 생성합니다.
+Creates a note with a task list.
 
-**파라미터:**
-- `title` (str): 노트 제목
-- `tasks` (List[str]): 할 일 목록
-- `notebook` (str, optional): 노트북 이름
-- `due_date` (str, optional): 마감일
-- `priority` (str): 우선순위 (기본값: "medium")
-- `tags` (List[str], optional): 태그 목록
-- `reminder` (str, optional): 알림 시간
+**Parameters:**
+- `title` (str): Note title
+- `tasks` (List[str]): List of tasks
+- `notebook` (str, optional): Notebook name
+- `due_date` (str, optional): Due date
+- `priority` (str): Priority (default: "medium")
+- `tags` (List[str], optional): List of tags
+- `reminder` (str, optional): Reminder time
 
-**예제:**
+**Example:**
 ```python
 client.create_task_note(
-    title="주간 업무",
-    tasks=["보고서 작성", "회의 참석", "코드 리뷰"],
+    title="Weekly Tasks",
+    tasks=["Write report", "Attend meeting", "Code review"],
     due_date="2024-01-31",
     priority="high"
 )
 ```
 
 #### `create_meeting_note(**kwargs) -> bool`
-회의록 노트를 생성합니다.
+Creates a meeting note.
 
-**파라미터:**
-- `title` (str): 회의 제목
-- `date` (str): 회의 일시
-- `attendees` (List[str]): 참석자 목록
-- `agenda` (List[str]): 안건 목록
-- `notebook` (str, optional): 노트북 이름
-- `location` (str, optional): 회의 장소
-- `tags` (List[str], optional): 태그 목록
+**Parameters:**
+- `title` (str): Meeting title
+- `date` (str): Meeting time
+- `attendees` (List[str]): List of attendees
+- `agenda` (List[str]): List of agenda items
+- `notebook` (str, optional): Notebook name
+- `location` (str, optional): Meeting location
+- `tags` (List[str], optional): List of tags
 
-**예제:**
+**Example:**
 ```python
 client.create_meeting_note(
-    title="팀 미팅",
+    title="Team Meeting",
     date="2024-01-25 14:00",
-    attendees=["김팀장", "박개발", "이디자인"],
-    agenda=["프로젝트 진행상황", "다음 스프린트 계획"],
-    location="회의실 A"
+    attendees=["Team Lead Kim", "Developer Park", "Designer Lee"],
+    agenda=["Project progress", "Next sprint plan"],
+    location="Conference Room A"
 )
 ```
 
 #### `create_project_note(**kwargs) -> bool`
-프로젝트 계획 노트를 생성합니다.
+Creates a project plan note.
 
-**파라미터:**
-- `project_name` (str): 프로젝트 이름
-- `description` (str): 프로젝트 설명
-- `milestones` (List[str]): 마일스톤 목록
-- `team_members` (List[str]): 팀 멤버 목록
-- `due_date` (str, optional): 프로젝트 마감일
-- `notebook` (str, optional): 노트북 이름
-- `priority` (str): 우선순위 (기본값: "medium")
+**Parameters:**
+- `project_name` (str): Project name
+- `description` (str): Project description
+- `milestones` (List[str]): List of milestones
+- `team_members` (List[str]): List of team members
+- `due_date` (str, optional): Project due date
+- `notebook` (str, optional): Notebook name
+- `priority` (str): Priority (default: "medium")
 
-**예제:**
+**Example:**
 ```python
 client.create_project_note(
-    project_name="웹사이트 리뉴얼",
-    description="기존 웹사이트의 UI/UX 개선",
-    milestones=["기획", "디자인", "개발", "테스트"],
-    team_members=["기획자", "디자이너", "개발자"],
+    project_name="Website Redesign",
+    description="Improve UI/UX of existing website",
+    milestones=["Planning", "Design", "Development", "Testing"],
+    team_members=["Planner", "Designer", "Developer"],
     due_date="2024-06-30"
 )
 ```
 
 #### `create_daily_note(**kwargs) -> bool`
-일일 노트를 생성합니다.
+Creates a daily note.
 
-**파라미터:**
-- `date` (str, optional): 날짜 (기본값: 오늘)
-- `mood` (str, optional): 기분
-- `weather` (str, optional): 날씨
-- `goals` (List[str], optional): 오늘의 목표
-- `reflections` (str, optional): 하루 돌아보기
-- `notebook` (str, optional): 노트북 이름
+**Parameters:**
+- `date` (str, optional): Date (default: today)
+- `mood` (str, optional): Mood
+- `weather` (str, optional): Weather
+- `goals` (List[str], optional): Today's goals
+- `reflections` (str, optional): Daily reflections
+- `notebook` (str, optional): Notebook name
 
-**예제:**
+**Example:**
 ```python
 client.create_daily_note(
-    mood="😊 좋음",
-    weather="☀️ 맑음",
-    goals=["운동하기", "독서하기", "프로젝트 진행"],
-    reflections="오늘은 생산적인 하루였다."
+    mood="😊 Good",
+    weather="☀️ Sunny",
+    goals=["Exercise", "Reading", "Project progress"],
+    reflections="Today was a productive day."
 )
 ```
 
-### 검색 및 탐색
+### Search and Navigation
 
 #### `search_notes(**kwargs) -> bool`
-노트를 검색합니다.
+Searches for notes.
 
-**파라미터:**
-- `query` (str): 검색어
-- `notebook` (str, optional): 특정 노트북에서만 검색
-- `tags` (List[str], optional): 특정 태그로 필터링
-- `limit` (int, optional): 검색 결과 제한
-- `x_success` (str, optional): 성공시 콜백 URL
-- `x_error` (str, optional): 실패시 콜백 URL
-- `x_cancel` (str, optional): 취소시 콜백 URL
+**Parameters:**
+- `query` (str): Search term
+- `notebook` (str, optional): Search only in specific notebook
+- `tags` (List[str], optional): Filter by specific tags
+- `limit` (int, optional): Limit search results
+- `x_success` (str, optional): Success callback URL
+- `x_error` (str, optional): Error callback URL
+- `x_cancel` (str, optional): Cancel callback URL
 
-**예제:**
+**Example:**
 ```python
-# 기본 검색
-client.search_notes("프로젝트")
+# Basic search
+client.search_notes("project")
 
-# 고급 검색
+# Advanced search
 client.search_notes(
-    query="회의",
-    notebook="업무",
-    tags=["중요", "진행중"],
+    query="meeting",
+    notebook="work",
+    tags=["important", "in-progress"],
     limit=10
 )
 ```
 
-### 노트북 관리
+### Notebook Management
 
 #### `create_notebook(**kwargs) -> bool`
-새로운 노트북을 생성합니다.
+Creates a new notebook.
 
-**파라미터:**
-- `name` (str): 노트북 이름
-- `color` (str, optional): 노트북 색상
-- `parent` (str, optional): 부모 노트북 이름 (하위 노트북 생성시)
-- `x_success` (str, optional): 성공시 콜백 URL
-- `x_error` (str, optional): 실패시 콜백 URL
-- `x_cancel` (str, optional): 취소시 콜백 URL
+**Parameters:**
+- `name` (str): Notebook name
+- `color` (str, optional): Notebook color
+- `parent` (str, optional): Parent notebook name (for creating sub-notebooks)
+- `x_success` (str, optional): Success callback URL
+- `x_error` (str, optional): Error callback URL
+- `x_cancel` (str, optional): Cancel callback URL
 
-**예제:**
+**Example:**
 ```python
-# 기본 노트북 생성
-client.create_notebook("새 프로젝트")
+# Create basic notebook
+client.create_notebook("New Project")
 
-# 색상이 있는 노트북 생성
-client.create_notebook("데이터 분석", color="purple")
+# Create notebook with color
+client.create_notebook("Data Analysis", color="purple")
 
-# 하위 노트북 생성
-client.create_notebook("월간 리포트", parent="데이터 분석")
+# Create sub-notebook
+client.create_notebook("Monthly Report", parent="Data Analysis")
 ```
 
 #### `open_notebook(**kwargs) -> bool`
-노트북을 엽니다.
+Opens a notebook.
 
-**파라미터:**
-- `name` (str, optional): 노트북 이름
-- `notebook_id` (str, optional): 노트북 ID
-- `x_success` (str, optional): 성공시 콜백 URL
-- `x_error` (str, optional): 실패시 콜백 URL
-- `x_cancel` (str, optional): 취소시 콜백 URL
+**Parameters:**
+- `name` (str, optional): Notebook name
+- `notebook_id` (str, optional): Notebook ID
+- `x_success` (str, optional): Success callback URL
+- `x_error` (str, optional): Error callback URL
+- `x_cancel` (str, optional): Cancel callback URL
 
-### 파일 작업
+### File Operations
 
 #### `import_note(**kwargs) -> bool`
-파일에서 노트를 가져옵니다.
+Imports a note from a file.
 
-**파라미터:**
-- `file_path` (str): 가져올 파일 경로
-- `notebook` (str, optional): 대상 노트북
-- `format_type` (str, optional): 파일 형식 (markdown, txt, html 등)
-- `x_success` (str, optional): 성공시 콜백 URL
-- `x_error` (str, optional): 실패시 콜백 URL
-- `x_cancel` (str, optional): 취소시 콜백 URL
+**Parameters:**
+- `file_path` (str): Path to file to import
+- `notebook` (str, optional): Target notebook
+- `format_type` (str, optional): File format (markdown, txt, html, etc.)
+- `x_success` (str, optional): Success callback URL
+- `x_error` (str, optional): Error callback URL
+- `x_cancel` (str, optional): Cancel callback URL
 
 #### `export_note(**kwargs) -> bool`
-노트를 내보냅니다.
+Exports a note.
 
-**파라미터:**
-- `note_id` (str, optional): 내보낼 노트 ID
-- `title` (str, optional): 노트 제목으로 검색
-- `format_type` (str): 내보낼 형식 (기본값: "markdown")
-- `destination` (str, optional): 저장 경로
-- `x_success` (str, optional): 성공시 콜백 URL
-- `x_error` (str, optional): 실패시 콜백 URL
-- `x_cancel` (str, optional): 취소시 콜백 URL
+**Parameters:**
+- `note_id` (str, optional): Note ID to export
+- `title` (str, optional): Search by note title
+- `format_type` (str): Export format (default: "markdown")
+- `destination` (str, optional): Save path
+- `x_success` (str, optional): Success callback URL
+- `x_error` (str, optional): Error callback URL
+- `x_cancel` (str, optional): Cancel callback URL
 
-### 기타 기능
+### Other Features
 
 #### `quick_note(**kwargs) -> bool`
-빠른 노트를 추가합니다.
+Adds a quick note.
 
-**파라미터:**
-- `text` (str): 추가할 텍스트
-- `append` (bool, optional): 기존 노트 끝에 추가
-- `prepend` (bool, optional): 기존 노트 앞에 추가
-- `x_success` (str, optional): 성공시 콜백 URL
-- `x_error` (str, optional): 실패시 콜백 URL
+**Parameters:**
+- `text` (str): Text to add
+- `append` (bool, optional): Append to end of existing note
+- `prepend` (bool, optional): Prepend to beginning of existing note
+- `x_success` (str, optional): Success callback URL
+- `x_error` (str, optional): Error callback URL
 
 #### `open_upnote(**kwargs) -> bool`
-UpNote 앱을 엽니다.
+Opens the UpNote app.
 
-**파라미터:**
-- `x_success` (str, optional): 성공시 콜백 URL
-- `x_error` (str, optional): 실패시 콜백 URL
+**Parameters:**
+- `x_success` (str, optional): Success callback URL
+- `x_error` (str, optional): Error callback URL
 
 #### `debug_url(action: str, params: Dict[str, Any]) -> str`
-디버깅용으로 생성될 URL을 반환합니다 (실제로 열지 않음).
+Returns the URL that would be generated for debugging (without actually opening).
 
-**파라미터:**
-- `action` (str): 액션 (예: "note/new", "search")
-- `params` (Dict[str, Any]): URL 파라미터
+**Parameters:**
+- `action` (str): Action (e.g., "note/new", "search")
+- `params` (Dict[str, Any]): URL parameters
 
-**반환값:** `str` - 생성된 URL
+**Return Value:** `str` - Generated URL
 
 ---
 
-## UpNoteHelper 메서드
+## UpNoteHelper Methods
 
 ### `format_markdown_content(content: str, add_timestamp: bool = False, add_separator: bool = False) -> str`
-마크다운 콘텐츠를 포맷팅합니다.
+Formats markdown content.
 
-**파라미터:**
-- `content` (str): 원본 콘텐츠
-- `add_timestamp` (bool): 타임스탬프 추가 여부
-- `add_separator` (bool): 구분선 추가 여부
+**Parameters:**
+- `content` (str): Original content
+- `add_timestamp` (bool): Whether to add timestamp
+- `add_separator` (bool): Whether to add separator
 
-**반환값:** `str` - 포맷팅된 콘텐츠
+**Return Value:** `str` - Formatted content
 
 ### `create_checklist(items: List[str]) -> str`
-체크리스트를 생성합니다.
+Creates a checklist.
 
-**파라미터:**
-- `items` (List[str]): 체크리스트 항목들
+**Parameters:**
+- `items` (List[str]): Checklist items
 
-**반환값:** `str` - 마크다운 체크리스트
+**Return Value:** `str` - Markdown checklist
 
-**예제:**
+**Example:**
 ```python
 checklist = UpNoteHelper.create_checklist([
-    "할 일 1",
-    "할 일 2", 
-    "할 일 3"
+    "Task 1",
+    "Task 2", 
+    "Task 3"
 ])
-# 결과: "- [ ] 할 일 1\n- [ ] 할 일 2\n- [ ] 할 일 3"
+# Result: "- [ ] Task 1
+- [ ] Task 2
+- [ ] Task 3"
 ```
 
 ### `create_table(headers: List[str], rows: List[List[str]]) -> str`
-마크다운 테이블을 생성합니다.
+Creates a markdown table.
 
-**파라미터:**
-- `headers` (List[str]): 테이블 헤더
-- `rows` (List[List[str]]): 테이블 행 데이터
+**Parameters:**
+- `headers` (List[str]): Table headers
+- `rows` (List[List[str]]): Table row data
 
-**반환값:** `str` - 마크다운 테이블
+**Return Value:** `str` - Markdown table
 
-**예제:**
+**Example:**
 ```python
 table = UpNoteHelper.create_table(
-    headers=["이름", "나이", "직업"],
+    headers=["Name", "Age", "Job"],
     rows=[
-        ["김철수", "30", "개발자"],
-        ["이영희", "25", "디자이너"]
+        ["Kim Chul-soo", "30", "Developer"],
+        ["Lee Young-hee", "25", "Designer"]
     ]
 )
 ```
 
 ---
 
-## 지원하는 색상
+## Supported Colors
 
-- `red`: 빨간색 (긴급, 중요)
-- `blue`: 파란색 (정보, 계획)
-- `green`: 녹색 (완료, 성공)
-- `yellow`: 노란색 (주의, 대기)
-- `purple`: 보라색 (창작, 아이디어)
-- `gray`: 회색 (보관, 참고)
-- `orange`: 주황색 (경고, 알림)
-- `pink`: 분홍색 (개인, 취미)
+- `red`: Red (urgent, important)
+- `blue`: Blue (information, planning)
+- `green`: Green (completed, success)
+- `yellow`: Yellow (caution, waiting)
+- `purple`: Purple (creative, ideas)
+- `gray`: Gray (archived, reference)
+- `orange`: Orange (warning, alert)
+- `pink`: Pink (personal, hobbies)
 
-## 우선순위 레벨
+## Priority Levels
 
-- `urgent`: 긴급
-- `high`: 높음
-- `medium`: 보통 (기본값)
-- `low`: 낮음
+- `urgent`: Urgent
+- `high`: High
+- `medium`: Medium (default)
+- `low`: Low
 
-## 날짜 형식
+## Date Formats
 
-### ISO 8601 형식
-- `2024-01-25T14:30:00` (날짜와 시간)
-- `2024-01-25` (날짜만)
+### ISO 8601 Format
+- `2024-01-25T14:30:00` (date and time)
+- `2024-01-25` (date only)
 
-### 자연어 형식 (reminder에서 지원)
+### Natural Language Format (supported in reminder)
 - `"tomorrow 2pm"`
 - `"next friday"`
 - `"in 1 hour"`
