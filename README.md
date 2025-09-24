@@ -4,7 +4,7 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/upnote-python-client.svg)](https://pypi.org/project/upnote-python-client/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A powerful Python client for UpNote that leverages URL schemes (x-callback-url) to programmatically create and manage notes.
+A powerful Python client for UpNote that leverages URL schemes (x-callback-url) to programmatically create and manage notes. Now includes a full MCP (Model Context Protocol) server for seamless integration with AI assistants and coding tools.
 
 ## Features
 
@@ -14,6 +14,8 @@ A powerful Python client for UpNote that leverages URL schemes (x-callback-url) 
 - Create and manage notebooks and sub-notebooks
 - Launch the UpNote application
 - Markdown helper functions (checklists, tables, and more)
+- **NEW: MCP Server** for AI assistant integration (Claude, Cursor, etc.)
+- **NEW: Debug wrapper** for MCP troubleshooting
 
 ## Installation
 
@@ -172,6 +174,8 @@ python tests/final_test_summary.py
 ```
 upnote_client/
 ├── upnote_client.py          # Main client module
+├── upnote_mcp_server.py      # MCP server implementation
+├── upnote_mcp_debugger.py    # MCP debug wrapper
 ├── requirements.txt          # Dependencies (none)
 ├── setup.py                 # Installation script
 ├── README.md                # Project documentation
@@ -187,6 +191,10 @@ upnote_client/
 │   ├── test_all_features.py
 │   ├── test_markdown.py
 │   └── final_test_summary.py
+├── logs/                    # MCP debug logs
+│   ├── mcp_debug_*.log
+│   ├── proxy_client_to_server.bin
+│   └── proxy_server_to_client.bin
 └── docs/                    # Documentation
     └── API_REFERENCE.md
 ```
@@ -395,4 +403,305 @@ client.create_note(
     reminder="2024-01-20T09:00:00",
     due_date="2024-01-20T18:00:00"
 )
+```
+
+---
+
+# MCP Server Integration 🤖
+
+UpNote Python Client는 이제 **MCP (Model Context Protocol) 서버**를 포함하여 AI 어시스턴트(Claude, Cursor 등)와 직접 통합할 수 있습니다.
+
+## MCP 서버 기능
+
+### 제공되는 도구 (Tools)
+
+1. **기본 노트 관리**
+   - `create_note`: 기본 노트 생성
+   - `create_markdown_note`: 마크다운 노트 생성
+   - `search_notes`: 노트 검색
+   - `open_note`: 노트 열기
+   - `quick_note`: 빠른 노트 추가
+
+2. **특수 노트 유형**
+   - `create_task_note`: 작업 목록 노트
+   - `create_meeting_note`: 회의 노트
+   - `create_project_note`: 프로젝트 노트
+   - `create_daily_note`: 일일 노트
+
+3. **노트북 관리**
+   - `create_notebook`: 노트북 생성
+   - `open_notebook`: 노트북 열기
+
+4. **파일 작업**
+   - `import_note`: 노트 가져오기
+   - `export_note`: 노트 내보내기
+
+5. **애플리케이션 제어**
+   - `open_upnote`: UpNote 앱 실행
+
+### MCP 서버 특징
+
+- **듀얼 프레이밍 지원**: NDJSON과 LSP 프로토콜 자동 감지
+- **Stdio 통신**: 표준 입출력을 통한 안정적인 통신
+- **에러 처리**: 견고한 예외 처리 및 오류 응답
+- **로깅**: stderr를 통한 상세한 디버깅 정보
+
+## MCP 서버 설정
+
+### 1. Claude Desktop에서 설정
+
+`~/.config/claude-desktop/claude_desktop_config.json` 파일에 다음을 추가:
+
+```json
+{
+  "mcpServers": {
+    "upnote": {
+      "command": "python",
+      "args": ["/path/to/your/upnote_mcp_server.py"],
+      "env": {}
+    }
+  }
+}
+```
+
+### 2. Cursor에서 설정
+
+Cursor의 설정에서 MCP 서버를 추가:
+
+```json
+{
+  "mcp.servers": {
+    "upnote": {
+      "command": "python",
+      "args": ["/path/to/your/upnote_mcp_server.py"]
+    }
+  }
+}
+```
+
+### 3. 직접 실행
+
+터미널에서 직접 MCP 서버를 테스트할 수 있습니다:
+
+```bash
+python upnote_mcp_server.py
+```
+
+## MCP 디버깅 도구 🔧
+
+### upnote_mcp_debugger.py
+
+MCP 통신 문제를 해결하기 위한 고급 디버깅 래퍼입니다.
+
+#### 기능
+
+1. **프록시 모드 (기본값)**
+   - 실제 MCP 서버를 생성하고 클라이언트-서버 간 통신을 중계
+   - 바이너리 레벨에서 모든 데이터를 캡처
+   - 메시지를 자동으로 파싱하고 요약
+   - LSP와 NDJSON 프레이밍 모두 지원
+
+2. **트립와이어 모드**
+   - 첫 번째 클라이언트 메시지만 캡처하고 종료
+   - 프레이밍 감지 및 메시지 구조 분석
+   - 연결 문제 진단에 유용
+
+#### 사용법
+
+```bash
+# 프록시 모드 (기본값)
+python upnote_mcp_debugger.py
+
+# 트립와이어 모드
+python upnote_mcp_debugger.py --mode tripwire
+
+# 커스텀 서버 스크립트 지정
+python upnote_mcp_debugger.py --server /path/to/custom_server.py
+```
+
+#### 환경 변수
+
+```bash
+# 모드 설정
+export MCP_WRAPPER_MODE=proxy  # 또는 tripwire
+
+# 서버 스크립트 경로
+export MCP_WRAPPER_SERVER=/path/to/upnote_mcp_server.py
+```
+
+#### 로그 파일
+
+디버거는 다음 파일들을 생성합니다:
+
+- `logs/mcp_debug_YYYYMMDD.log`: 상세한 디버그 로그
+- `logs/proxy_client_to_server.bin`: 클라이언트→서버 바이너리 데이터
+- `logs/proxy_server_to_client.bin`: 서버→클라이언트 바이너리 데이터
+
+## MCP 사용 예제
+
+### Claude Desktop에서 사용
+
+Claude Desktop에서 다음과 같이 요청할 수 있습니다:
+
+```
+"새로운 프로젝트 노트를 만들어줘. 제목은 'AI 챗봇 개발'이고, 설명은 'GPT 기반 고객 서비스 챗봇 개발 프로젝트'로 해줘. 마일스톤은 '요구사항 분석', '설계', '개발', '테스트', '배포'로 설정하고, 팀원은 '김개발', '이디자인', '박기획'으로 해줘."
+```
+
+Claude가 자동으로 `create_project_note` 도구를 사용하여 노트를 생성합니다.
+
+### 회의 노트 생성
+
+```
+"내일 오후 2시 팀 회의 노트를 만들어줘. 참석자는 팀장, 개발자 3명, 디자이너 1명이고, 안건은 '스프린트 리뷰'와 '다음 스프린트 계획'이야."
+```
+
+### 일일 노트 생성
+
+```
+"오늘의 일일 노트를 만들어줘. 기분은 좋음, 날씨는 맑음으로 하고, 목표는 '운동하기', '독서하기', '프로젝트 진행'으로 설정해줘."
+```
+
+### 노트 검색
+
+```
+"'회의'라는 키워드로 노트를 검색해줘. '업무' 태그가 있는 것만 찾아줘."
+```
+
+## 고급 MCP 설정
+
+### 디버그 모드로 Claude Desktop 설정
+
+문제 해결을 위해 디버거를 통해 MCP 서버를 실행:
+
+```json
+{
+  "mcpServers": {
+    "upnote-debug": {
+      "command": "python",
+      "args": ["/path/to/upnote_mcp_debugger.py", "--mode", "proxy"],
+      "env": {
+        "MCP_WRAPPER_SERVER": "/path/to/upnote_mcp_server.py"
+      }
+    }
+  }
+}
+```
+
+### 커스텀 환경 변수
+
+```json
+{
+  "mcpServers": {
+    "upnote": {
+      "command": "python",
+      "args": ["/path/to/upnote_mcp_server.py"],
+      "env": {
+        "PYTHONPATH": "/path/to/upnote_client",
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  }
+}
+```
+
+## 문제 해결
+
+### 일반적인 문제
+
+1. **UpNote 클라이언트를 찾을 수 없음**
+   ```
+   ERROR: UpNote client not available
+   ```
+   - 해결: `pip install upnote-python-client` 실행
+   - 또는 PYTHONPATH에 모듈 경로 추가
+
+2. **MCP 서버 연결 실패**
+   - 디버그 모드로 실행: `python upnote_mcp_debugger.py --mode tripwire`
+   - 로그 파일 확인: `logs/mcp_debug_*.log`
+
+3. **권한 문제**
+   - 스크립트 실행 권한 확인: `chmod +x upnote_mcp_server.py`
+   - Python 경로 확인: `which python`
+
+### 디버깅 단계
+
+1. **기본 연결 테스트**
+   ```bash
+   echo '{"jsonrpc":"2.0","id":1,"method":"ping"}' | python upnote_mcp_server.py
+   ```
+
+2. **디버그 래퍼로 상세 분석**
+   ```bash
+   python upnote_mcp_debugger.py --mode tripwire
+   ```
+
+3. **로그 분석**
+   ```bash
+   tail -f logs/mcp_debug_*.log
+   ```
+
+## MCP 아키텍처
+
+### 메시지 흐름
+
+```
+AI Assistant (Claude/Cursor)
+        ↕ (JSON-RPC 2.0)
+MCP Debugger (optional)
+        ↕ (Binary passthrough)
+MCP Server (upnote_mcp_server.py)
+        ↕ (Python API calls)
+UpNote Client (upnote_python_client)
+        ↕ (URL schemes)
+UpNote Application
+```
+
+### 프로토콜 지원
+
+- **NDJSON**: 한 줄당 하나의 JSON 메시지
+- **LSP**: Content-Length 헤더를 가진 HTTP 스타일 메시지
+- **자동 감지**: 첫 번째 입력으로 프레이밍 방식 결정
+
+### 도구 스키마
+
+모든 MCP 도구는 JSON Schema로 정의된 입력 매개변수를 가집니다:
+
+```json
+{
+  "name": "create_note",
+  "description": "Create a new note in UpNote",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "title": {"type": "string"},
+      "content": {"type": "string"},
+      "notebook": {"type": "string"},
+      "tags": {"type": "array", "items": {"type": "string"}},
+      "pinned": {"type": "boolean"},
+      "favorite": {"type": "boolean"}
+    },
+    "required": ["title", "content"]
+  }
+}
+```
+
+## 성능 및 제한사항
+
+### 성능
+
+- MCP 서버는 단일 스레드로 동작
+- 각 도구 호출은 독립적으로 처리
+- URL 스키마 기반이므로 UpNote 앱이 실행되어야 함
+
+### 제한사항
+
+- UpNote 앱이 설치되어 있어야 함
+- macOS, Windows, Linux 플랫폼별 URL 핸들러 필요
+- 네트워크 연결 없이 로컬에서만 동작
+
+### 권장사항
+
+- 대량의 노트 생성 시 배치 처리 고려
+- 디버그 모드는 개발/테스트 시에만 사용
+- 프로덕션 환경에서는 로그 레벨 조정 고려
 ```
