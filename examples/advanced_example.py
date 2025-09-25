@@ -179,15 +179,14 @@ def test_advanced_features():
     # 1. Create notebook with color
     print("1. Creating notebook with color...")
     success = client.create_notebook(
-        name="📊 Data Analysis",
-        color="purple"
+        title="📊 Data Analysis",
     )
     print(f"Notebook creation: {'successful' if success else 'failed'}")
     
     # 2. Create sub-notebook
     print("\n2. Creating sub-notebook...")
     success = client.create_notebook(
-        name="Monthly Report",
+        title="Monthly Report",
         parent="📊 Data Analysis",
         color="yellow"
     )
@@ -198,15 +197,15 @@ def test_advanced_features():
     success = client.open_notebook(name="📊 Data Analysis")
     print(f"Opening notebook: {'successful' if success else 'failed'}")
     
-    # 4. Advanced search (notebook and tag filtering)
-    print("\n4. Running advanced search...")
-    success = client.search_notes(
-        query="project",
-        notebook="Projects",
-        tags=["plan", "important"],
-        limit=10
-    )
-    print(f"Advanced search: {'successful' if success else 'failed'}")
+    # # 4. Advanced search (notebook and tag filtering)
+    # print("\n4. Running advanced search...")
+    # success = client.search_notes(
+    #     query="project",
+    #     notebook="Projects",
+    #     tags=["plan", "important"],
+    #     limit=10
+    # )
+    # print(f"Advanced search: {'successful' if success else 'failed'}")
     
     # 5. Open note in edit mode
     print("\n5. Opening note in edit mode...")
@@ -224,9 +223,8 @@ def test_advanced_features():
 - New idea: AI-based automatic tag generation
 - Reference link: https://example.com/ai-tagging
 """
-    success = client.quick_note(
-        text=quick_text,
-        append=True
+    success = client.create_note(
+        text=quick_text,        
     )
     print(f"Adding quick note: {'successful' if success else 'failed'}")
 

@@ -89,7 +89,7 @@ def main():
         
         # 4. Create notebook
         print("\n4. Creating notebook...")
-        success = client.create_notebook("New Project")
+        success = client.create_notebook(title="New Project")
         print(f"Notebook creation {'successful' if success else 'failed'}")
         
         # 5. Search notes

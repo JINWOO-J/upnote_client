@@ -167,13 +167,13 @@ def list_tools() -> Dict[str, Any]:
                 "type": "object",
                 "properties": {
                     "title": {"type": "string"},
-                    "content": {"type": "string"},
+                    "text": {"type": "string"},
                     "notebook": {"type": "string"},
                     "tags": {"type": "array", "items": {"type": "string"}},
                     "pinned": {"type": "boolean"},
                     "favorite": {"type": "boolean"},
                 },
-                "required": ["title", "content"],
+                "required": ["title", "text"],
             },
         },
         {
@@ -238,21 +238,21 @@ def list_tools() -> Dict[str, Any]:
                 "required": ["project_name", "description"],
             },
         },
-        {
-            "name": "create_daily_note",
-            "description": "Create a daily journal note in UpNote",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "date": {"type": "string"},
-                    "mood": {"type": "string"},
-                    "weather": {"type": "string"},
-                    "goals": {"type": "array", "items": {"type": "string"}},
-                    "reflections": {"type": "string"},
-                },
-                "required": ["date"],
-            },
-        },
+        # {
+        #     "name": "create_daily_note",
+        #     "description": "Create a daily journal note in UpNote",
+        #     "inputSchema": {
+        #         "type": "object",
+        #         "properties": {
+        #             "date": {"type": "string"},
+        #             "mood": {"type": "string"},
+        #             "weather": {"type": "string"},
+        #             "goals": {"type": "array", "items": {"type": "string"}},
+        #             "reflections": {"type": "string"},
+        #         },
+        #         "required": ["date"],
+        #     },
+        # },
         {
             "name": "search_notes",
             "description": "Search for notes in UpNote",
@@ -285,11 +285,11 @@ def list_tools() -> Dict[str, Any]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "name": {"type": "string"},
+                    "title": {"type": "string"},
                     "color": {"type": "string"},
                     "parent": {"type": "string"},
                 },
-                "required": ["name"],
+                "required": ["title"],
             },
         },
         {
@@ -301,19 +301,6 @@ def list_tools() -> Dict[str, Any]:
                     "name": {"type": "string"},
                     "notebook_id": {"type": "string"},
                 },
-            },
-        },
-        {
-            "name": "quick_note",
-            "description": "Create a quick note in UpNote",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "text": {"type": "string"},
-                    "append": {"type": "boolean"},
-                    "prepend": {"type": "boolean"},
-                },
-                "required": ["text"],
             },
         },
         {
@@ -390,8 +377,8 @@ def call_tool(params: Dict[str, Any]) -> Dict[str, Any]:
             res = client.create_notebook(**args)
         elif name == "open_notebook":
             res = client.open_notebook(**args)
-        elif name == "quick_note":
-            res = client.quick_note(**args)
+        # elif name == "quick_note":
+        #     res = client.quick_note(**args)
         elif name == "open_upnote":
             res = client.open_upnote(**args)
         elif name == "import_note":

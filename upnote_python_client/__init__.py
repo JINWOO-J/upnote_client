@@ -12,21 +12,21 @@ import platform
 
 class UpNoteClient:
     """Class for creating and managing notes using UpNote URL scheme"""
-    
+
     def __init__(self):
         """
         Initialize UpNote client
         """
         self.base_scheme = "upnote://x-callback-url"
         self.system = platform.system()
-    
+
     def _open_url(self, url: str) -> bool:
         """
         Open URL using system-specific method
-        
+
         Args:
             url (str): URL to open
-            
+
         Returns:
             bool: Success status
         """
@@ -42,15 +42,15 @@ class UpNoteClient:
             return True
         except subprocess.CalledProcessError as e:
             raise Exception(f"Failed to open URL: {str(e)}")
-    
+
     def _build_url(self, action: str, params: Dict[str, Any]) -> str:
         """
         Generate UpNote URL scheme URL
-        
+
         Args:
             action (str): Action (e.g., note/new, note/open)
             params (Dict[str, Any]): URL parameters
-            
+
         Returns:
             str: Complete URL
         """
@@ -64,28 +64,28 @@ class UpNoteClient:
                     clean_params[key] = "true" if value else "false"
                 else:
                     clean_params[key] = str(value)
-        
+
         # URL encoding (safely handle markdown characters)
         query_string = urllib.parse.urlencode(clean_params, safe='', quote_via=urllib.parse.quote)
         url = f"{self.base_scheme}/{action}"
         if query_string:
             url += f"?{query_string}"
-        
+
         return url
-    
+
     def debug_url(self, action: str, params: Dict[str, Any]) -> str:
         """
         Debugging: Return the URL that would be generated (without actually opening)
-        
+
         Args:
             action (str): Action
             params (Dict[str, Any]): Parameters
-            
+
         Returns:
             str: Generated URL
         """
         return self._build_url(action, params)
-    
+
     def create_note(
         self,
         text: Optional[str] = None,
@@ -126,7 +126,7 @@ class UpNoteClient:
         Create a new note (supports extended UpNote URL scheme parameters)
         """
         params = {}
-        
+
         # Basic note information
         if text:
             params["text"] = text
@@ -140,7 +140,7 @@ class UpNoteClient:
             params["tags"] = tags
         if category:
             params["category"] = category
-            
+
         # Note properties
         if markdown is not None:
             params["markdown"] = markdown
@@ -154,7 +154,7 @@ class UpNoteClient:
             params["color"] = color
         if priority:
             params["priority"] = priority
-            
+
         # Time-related
         if reminder:
             params["reminder"] = reminder
@@ -164,7 +164,7 @@ class UpNoteClient:
             params["created_date"] = created_date
         if modified_date:
             params["modified_date"] = modified_date
-            
+
         # Location and attachments
         if location:
             params["location"] = location
@@ -172,7 +172,7 @@ class UpNoteClient:
             params["attachment"] = attachment
         if attachments:
             params["attachments"] = attachments
-            
+
         # Metadata
         if template:
             params["template"] = template
@@ -182,7 +182,7 @@ class UpNoteClient:
             params["source"] = source
         if url:
             params["url"] = url
-            
+
         # Security and access control
         if encrypted is not None:
             params["encrypted"] = encrypted
@@ -194,13 +194,13 @@ class UpNoteClient:
             params["shared"] = shared
         if public is not None:
             params["public"] = public
-            
+
         # Format and encoding
         if format:
             params["format"] = format
         if encoding:
             params["encoding"] = encoding
-            
+
         # Callback URLs
         if x_success:
             params["x-success"] = x_success
@@ -208,10 +208,10 @@ class UpNoteClient:
             params["x-error"] = x_error
         if x_cancel:
             params["x-cancel"] = x_cancel
-        
+
         url = self._build_url("note/new", params)
         return self._open_url(url)
-    
+
     def create_markdown_note(
         self,
         title: str,
@@ -229,13 +229,13 @@ class UpNoteClient:
         """
         # Format markdown content
         formatted_content = content
-        
+
         if add_timestamp:
             formatted_content = UpNoteHelper.format_markdown_content(
-                content, 
+                content,
                 add_timestamp=True
             )
-        
+
         return self.create_note(
             text=formatted_content,
             title=title,
@@ -247,7 +247,7 @@ class UpNoteClient:
             color=color,
             reminder=reminder
         )
-    
+
     def create_task_note(
         self,
         title: str,
@@ -263,10 +263,10 @@ class UpNoteClient:
         """
         task_content = "# " + title + "\n\n"
         task_content += UpNoteHelper.create_checklist(tasks)
-        
+
         if due_date:
             task_content += f"\n\n**Due Date**: {due_date}"
-        
+
         return self.create_note(
             text=task_content,
             title=title,
@@ -277,7 +277,7 @@ class UpNoteClient:
             reminder=reminder,
             markdown=True
         )
-    
+
     def create_meeting_note(
         self,
         title: str,
@@ -316,7 +316,7 @@ class UpNoteClient:
 ## Next Meeting
 **Schedule**: [Next meeting schedule]
 """
-        
+
         return self.create_note(
             text=meeting_content,
             title=title,
@@ -326,7 +326,7 @@ class UpNoteClient:
             markdown=True,
             template="meeting"
         )
-    
+
     def create_project_note(
         self,
         project_name: str,
@@ -372,7 +372,7 @@ class UpNoteClient:
     "Development schedule establishment"
 ])}
 """
-        
+
         return self.create_note(
             text=project_content,
             title=f"📋 {project_name}",
@@ -383,7 +383,7 @@ class UpNoteClient:
             markdown=True,
             template="project"
         )
-    
+
     def create_daily_note(
         self,
         date: Optional[str] = None,
@@ -398,7 +398,7 @@ class UpNoteClient:
         """
         if not date:
             date = datetime.now().strftime('%Y-%m-%d')
-        
+
         daily_content = f"""# 📅 {date}
 
 ## Today's Status
@@ -434,7 +434,7 @@ class UpNoteClient:
     "Tomorrow's Task 2"
 ])}
 """
-        
+
         return self.create_note(
             text=daily_content,
             title=f"📅 {date}",
@@ -444,7 +444,7 @@ class UpNoteClient:
             markdown=True,
             template="daily"
         )
-    
+
     def open_note(
         self,
         note_id: Optional[str] = None,
@@ -458,7 +458,7 @@ class UpNoteClient:
         Open an existing note
         """
         params = {}
-        
+
         if note_id:
             params["id"] = note_id
         if title:
@@ -471,44 +471,59 @@ class UpNoteClient:
             params["x-error"] = x_error
         if x_cancel:
             params["x-cancel"] = x_cancel
-        
+
         url = self._build_url("note/open", params)
         return self._open_url(url)
-    
+
     def search_notes(
         self,
         query: str,
-        notebook: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        limit: Optional[int] = None,
+        mode: Optional[str] = None,         # 'all_notes', 'notebooks', 'tags', 'filters' 등 (선택)
+        notebook_id: Optional[str] = None,  # mode='notebooks'일 때 사용
+        tag_id: Optional[str] = None,       # mode='tags'일 때 사용
+        filter_id: Optional[str] = None,    # mode='filters'일 때 사용
+        space_id: Optional[str] = None,     # 여러 공간을 쓸 때
         x_success: Optional[str] = None,
         x_error: Optional[str] = None,
         x_cancel: Optional[str] = None
     ) -> bool:
         """
-        Search for notes
+        Opens the UpNote search view.
+        Official spec: upnote://x-callback-url/view?action=search&query=... (+ optional parameters)
+        Reference: https://help.getupnote.com/more/x-callback-url-endpoints (action=search, query)
         """
-        params = {"query": query}
-        
-        if notebook:
-            params["notebook"] = notebook
-        if tags:
-            params["tags"] = tags
-        if limit:
-            params["limit"] = limit
+        if not query or not query.strip():
+            raise ValueError("query는 비어 있을 수 없습니다.")
+
+        params = {
+            "action": "search",
+            "query": query.strip(),
+        }
+        if mode:
+            params["mode"] = mode
+        if notebook_id:
+            params["notebookId"] = notebook_id
+        if tag_id:
+            params["tagId"] = tag_id
+        if filter_id:
+            params["filterId"] = filter_id
+        if space_id:
+            params["spaceId"] = space_id
+
         if x_success:
             params["x-success"] = x_success
         if x_error:
             params["x-error"] = x_error
         if x_cancel:
             params["x-cancel"] = x_cancel
-        
-        url = self._build_url("search", params)
+
+        url = self._build_url("view", params)
         return self._open_url(url)
-    
+
+
     def create_notebook(
         self,
-        name: str,
+        title: str,
         color: Optional[str] = None,
         parent: Optional[str] = None,
         x_success: Optional[str] = None,
@@ -518,8 +533,8 @@ class UpNoteClient:
         """
         Create a new notebook
         """
-        params = {"name": name}
-        
+        params = {"title": title}
+
         if color:
             params["color"] = color
         if parent:
@@ -530,10 +545,10 @@ class UpNoteClient:
             params["x-error"] = x_error
         if x_cancel:
             params["x-cancel"] = x_cancel
-        
+
         url = self._build_url("notebook/new", params)
         return self._open_url(url)
-    
+
     def open_notebook(
         self,
         name: Optional[str] = None,
@@ -546,7 +561,7 @@ class UpNoteClient:
         Open a notebook
         """
         params = {}
-        
+
         if name:
             params["name"] = name
         if notebook_id:
@@ -557,10 +572,10 @@ class UpNoteClient:
             params["x-error"] = x_error
         if x_cancel:
             params["x-cancel"] = x_cancel
-        
+
         url = self._build_url("notebook/open", params)
         return self._open_url(url)
-    
+
     def open_upnote(
         self,
         x_success: Optional[str] = None,
@@ -570,40 +585,40 @@ class UpNoteClient:
         Open UpNote app
         """
         params = {}
-        
+
         if x_success:
             params["x-success"] = x_success
         if x_error:
             params["x-error"] = x_error
-        
+
         url = self._build_url("open", params)
         return self._open_url(url)
-    
-    def quick_note(
-        self,
-        text: str,
-        append: Optional[bool] = None,
-        prepend: Optional[bool] = None,
-        x_success: Optional[str] = None,
-        x_error: Optional[str] = None
-    ) -> bool:
-        """
-        Add a quick note (add to existing note or create new note)
-        """
-        params = {"text": text}
-        
-        if append is not None:
-            params["append"] = append
-        if prepend is not None:
-            params["prepend"] = prepend
-        if x_success:
-            params["x-success"] = x_success
-        if x_error:
-            params["x-error"] = x_error
-        
-        url = self._build_url("quick", params)
-        return self._open_url(url)
-    
+
+    # def quick_note(
+    #     self,
+    #     text: str,
+    #     append: Optional[bool] = None,
+    #     prepend: Optional[bool] = None,
+    #     x_success: Optional[str] = None,
+    #     x_error: Optional[str] = None
+    # ) -> bool:
+    #     """
+    #     Add a quick note (add to existing note or create new note)
+    #     """
+    #     params = {"text": text}
+
+    #     if append is not None:
+    #         params["append"] = append
+    #     if prepend is not None:
+    #         params["prepend"] = prepend
+    #     if x_success:
+    #         params["x-success"] = x_success
+    #     if x_error:
+    #         params["x-error"] = x_error
+
+    #     url = self._build_url("quick", params)
+    #     return self._open_url(url)
+
     def import_note(
         self,
         file_path: str,
@@ -617,7 +632,7 @@ class UpNoteClient:
         Import note from file
         """
         params = {"file": file_path}
-        
+
         if notebook:
             params["notebook"] = notebook
         if format_type:
@@ -628,10 +643,10 @@ class UpNoteClient:
             params["x-error"] = x_error
         if x_cancel:
             params["x-cancel"] = x_cancel
-        
+
         url = self._build_url("import", params)
         return self._open_url(url)
-    
+
     def export_note(
         self,
         note_id: Optional[str] = None,
@@ -646,7 +661,7 @@ class UpNoteClient:
         Export note
         """
         params = {"format": format_type}
-        
+
         if note_id:
             params["id"] = note_id
         if title:
@@ -659,14 +674,14 @@ class UpNoteClient:
             params["x-error"] = x_error
         if x_cancel:
             params["x-cancel"] = x_cancel
-        
+
         url = self._build_url("export", params)
         return self._open_url(url)
 
 
 class UpNoteHelper:
     """Helper class for UpNote operations"""
-    
+
     @staticmethod
     def format_markdown_content(
         content: str,
@@ -677,16 +692,16 @@ class UpNoteHelper:
         Format markdown content
         """
         formatted_content = content
-        
+
         if add_timestamp:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             formatted_content = f"*Created: {timestamp}*\n\n{formatted_content}"
-        
+
         if add_separator:
             formatted_content = f"{formatted_content}\n\n---\n"
-        
+
         return formatted_content
-    
+
     @staticmethod
     def create_checklist(items: List[str]) -> str:
         """
@@ -694,7 +709,7 @@ class UpNoteHelper:
         """
         checklist = "\n".join([f"- [ ] {item}" for item in items])
         return checklist
-    
+
     @staticmethod
     def create_table(headers: List[str], rows: List[List[str]]) -> str:
         """
@@ -702,17 +717,17 @@ class UpNoteHelper:
         """
         if not headers or not rows:
             return ""
-        
+
         # Create header
         header_row = "| " + " | ".join(headers) + " |"
         separator_row = "| " + " | ".join(["---"] * len(headers)) + " |"
-        
+
         # Create data rows
         data_rows = []
         for row in rows:
             if len(row) == len(headers):
                 data_rows.append("| " + " | ".join(row) + " |")
-        
+
         return "\n".join([header_row, separator_row] + data_rows)
 
 
